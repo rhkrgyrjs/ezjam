@@ -195,13 +195,13 @@ def logout():
 # POST -> 로그인 시 form에 입력된 id, pw를 table에 저장된 id, pw에 비교후 일치하면 로그인, id,pw 세션유지
 def login():
     if request.method == 'POST':
-        userid = request.form['id']
-        userpw = request.form['pw']
+        userid = request.form['user-id']
+        userpw = request.form['user-pw']
 
-        logininfo = request.form['id']
+        logininfo = request.form['user-id']
         conn = connectsql()
         cursor = conn.cursor()
-        query = "SELECT * FROM tbl_user WHERE user_name = %s AND user_password = %s"
+        query = "SELECT * FROM userinfo WHERE id = %s AND pw_hashed = %s"
         value = (userid, userpw)
         cursor.execute(query, value)
         data = cursor.fetchall()
@@ -212,14 +212,14 @@ def login():
             data = row[0]
         
         if data:
-            session['username'] = request.form['id']
+            session['username'] = request.form['user-id']
             return render_template('index.html', logininfo = logininfo)
         else:
             return render_template('loginError.html')
     else:
         return render_template ('login.html')
 
-@app.route('/regist', methods=['GET', 'POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 # GET -> 회원가입 페이지 연결
 # 회원가입 버튼 클릭 시, 입력된 id가 tbl_user의 컬럼에 있을 시 에러팝업, 없을 시 회원가입 성공
 def regist():
@@ -247,7 +247,7 @@ def regist():
         cursor.close()
         conn.close()
     else:
-        return render_template('regist.html')        
+        return render_template('signup.html')        
 
 if __name__ == '__main__':
     app.run(debug=True)

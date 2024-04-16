@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <header></header>
-    <main></main>
-    <footer></footer>
-  </body>
+<html lang="ko">
+	<head>
+    	<meta charset="utf-8">
+   		<title>EzJam 로그인</title>
+	</head>
+	<body>
+		<h3>임시 로그인 페이지</h3>
+		<hr>
+		<form class="login-form" method="POST" action="/login">
+			<input id="user-id" type="text" placeholder="아이디">
+			<br>
+			<input id="user-pw" type="password" placeholder="비밀번호">
+			<br>
+			<input type="submit" value="로그인">
+			<br>
+			<button onclick="location.href='/signup'">회원가입</button>
+		</form>
+  	</body>
 </html>
