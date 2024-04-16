@@ -1,0 +1,113 @@
+/* 폰트 가져오기 */
+/* 라이센스 문제는 잘 모르겠음.. */
+@font-face 
+{
+  font-family: 'TmonMonsori';
+  src: url('../fonts/TmonMonsori.ttf') format('truetype');
+}
+
+/* 웹 페이지 상단 메인 타이틀 이미지 */
+.main-title
+{
+    display: block;
+    text-align: center;
+}
+
+/* 로그인/회원가입 버튼 */
+.login-signup-buttons
+{
+    display: block;
+    text-align: right;
+}
+
+.login-signup-buttons button
+{ 
+    display: inline-block; /* 인라인 요소로 설정 */
+    padding: 5px 12px; /* 내부 여백 설정 */
+    background-color: #4CAF50; /* 배경색 지정 */
+    color: white; /* 텍스트 색상 지정 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    text-decoration: none; /* 텍스트에 밑줄 제거 */
+    border: none; /* 테두리 제거 */
+    border-radius: 20px; /* 버튼을 동그랗게 만들기 위한 속성 */
+    cursor: pointer; /* 커서 스타일 변경 */
+    font-size: 16px; /* 폰트 크기 지정 */
+    font-family: 'TmonMonsori', sans-serif; 
+}
+
+.login-signup-buttons button:hover
+{
+    background-color: #45a049;
+}
+
+
+/* 네비게이션 바 스타일 */
+.navbar 
+{
+  overflow: hidden;
+  background-color: #4CAF50; /* 초록색으로 변경 */
+  font-family: 'TmonMonsori', sans-serif; 
+  display: flex;
+  justify-content: center;
+}
+
+/* navbar 클래스 하위의 <a> 태그 -> 네비게이션 바 안의 링크 */
+.navbar a 
+{
+  float: left;
+  display: block;
+  color: #f2f2f2; /* 텍스트 색상은 밝은색으로 유지 */
+  text-align: center;
+  padding: 14px 50px;
+  text-decoration: none;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;  
+  border: none;
+  outline: none;
+  color: white; /* 텍스트 색상은 흰색으로 유지 */
+  padding: 14px 16px;
+  background-color: #4CAF50; /* 초록색으로 변경 */
+  font-family: inherit;
+  margin: 0;
+
+  display: block;
+  color: #f2f2f2; /* 텍스트 색상은 밝은색으로 유지 */
+  text-decoration: none;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: #45a049; /* 초록색에 약간의 어둡고 더 강조된 색상으로 변경 */
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #4CAF50; /* 초록색으로 변경 */
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: white; /* 텍스트 색상은 흰색으로 유지 */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #45a049; /* 초록색에 약간의 어둡고 더 강조된 색상으로 변경 */
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
