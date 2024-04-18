@@ -12,10 +12,19 @@
       <img width="120" height="100" src="static/logos/main_logo.png">
     </a>
   </div>
-  <div class="login-signup-buttons">
+  <!-- 로그인/회원가입 버튼 부분 -->
+  {% if not loginInfo %}
+  <div class="buttons">
     <button id="login-button" onclick="location.href='/login'">로그인</button>
     <button id="signup-button" onclick="location.href='/signup'">회원가입</button>
   </div>
+  {% endif %}
+  {% if loginInfo %}
+  <div class="buttons">
+    <span>환영합니다! {{loginInfo}} 님!  </span>
+    <button id="logout-button" onclick="location.href='/logout'">로그아웃</button>
+  </div>
+  {% endif %}
   <br>
   <!-- 이하 네비게이션 바 부분 -->
   <div class="navbar">

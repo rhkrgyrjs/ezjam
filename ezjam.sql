@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.44, for Win64 (x86_64)
 --
--- Host: localhost    Database: karaoke
+-- Host: localhost    Database: ezjam
 -- ------------------------------------------------------
 -- Server version	5.7.44-log
 
@@ -25,10 +25,10 @@ DROP TABLE IF EXISTS `comments`;
 CREATE TABLE `comments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `post_id` int(11) NOT NULL,
-  `author_id` varchar(16) NOT NULL,
-  `author_nickname` varchar(10) NOT NULL,
+  `author_id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author_nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `content` varchar(1000) NOT NULL,
+  `content` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`),
   KEY `author_id` (`author_id`),
@@ -36,7 +36,7 @@ CREATE TABLE `comments` (
   CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `userinfo` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `comments_ibfk_3` FOREIGN KEY (`author_nickname`) REFERENCES `userinfo` (`nickname`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,17 +57,17 @@ DROP TABLE IF EXISTS `posts`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `posts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(250) NOT NULL,
-  `author_id` varchar(16) NOT NULL,
-  `author_nickname` varchar(10) NOT NULL,
+  `title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author_id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author_nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `content` varchar(65000) NOT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `author_id` (`author_id`),
   KEY `author_nickname` (`author_nickname`),
   CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `userinfo` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `posts_ibfk_2` FOREIGN KEY (`author_nickname`) REFERENCES `userinfo` (`nickname`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,19 +87,19 @@ DROP TABLE IF EXISTS `userinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `userinfo` (
-  `id` varchar(16) NOT NULL,
-  `pw_hashed` char(64) NOT NULL,
-  `email_local` varchar(64) NOT NULL,
-  `email_domain` varchar(255) NOT NULL,
-  `name` varchar(50) NOT NULL,
+  `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pw_hashed` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_local` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_domain` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `birthday` date NOT NULL,
-  `phone` varchar(15) NOT NULL,
-  `nickname` varchar(10) NOT NULL,
+  `phone` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_local` (`email_local`,`email_domain`),
   UNIQUE KEY `phone` (`phone`),
   UNIQUE KEY `nickname` (`nickname`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,4 +120,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-16 18:02:07
+-- Dump completed on 2024-04-18 18:38:09

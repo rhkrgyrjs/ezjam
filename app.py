@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, session, url_for, request, redirect
 import pymysql
 # Flask, MySQL 관련 import
@@ -16,11 +15,14 @@ def connectsql():
 
 @app.route('/')
 # 세션유지를 통한 로그인 유무 확인
+# 세션은 유저마다 생성되기 때문에 아래 방법으로도 유저 구별 가능
 def index():
+    # 로그인 되어있는 경우
     if 'username' in session:
         username = session['username']
         print(username)
         return render_template('index.html', logininfo = username)
+    # 로그인 되어있지 않은 경우
     else:
         username = None
         return render_template('index.html', logininfo = username )

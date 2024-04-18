@@ -14,13 +14,13 @@
 }
 
 /* 로그인/회원가입 버튼 */
-.login-signup-buttons
+.buttons
 {
     display: block;
     text-align: right;
 }
 
-.login-signup-buttons button
+.buttons button
 { 
     display: inline-block; /* 인라인 요소로 설정 */
     padding: 5px 12px; /* 내부 여백 설정 */
@@ -35,9 +35,17 @@
     font-family: 'TmonMonsori', sans-serif; 
 }
 
-.login-signup-buttons button:hover
+.buttons button:hover
 {
     background-color: #45a049;
+}
+
+/* 버튼 옆 문구에 적용 */
+.buttons span
+{
+  color: #4CAF50;
+  font-size: 14px; /* 폰트 크기 지정 */
+  font-family: 'TmonMonsori', sans-serif; 
 }
 
 
