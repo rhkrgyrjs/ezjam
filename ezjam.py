@@ -19,19 +19,18 @@ def index():
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if isUserLoggedIn():
+        return render_template('error.html', errorMessage = "이미 로그인 중입니다.")
     if request.method == 'POST':
-        # 로그인 검증 루틴
         print('로그인 페이지 POST')
         userNameAndNickname = DB.loginValidation(request.form['user-id'], request.form['user-pw'])
         if not userNameAndNickname:
-            print("로그인 실패")
+            return render_template('login.html')
         else:
-            print("로그인 성공")
-            print(userNameAndNickname)
+            userNickName = userNameAndNickname[0][1]
             session['userID'] = request.form['user-id']
-        return render_template('index.html', loginInfo = request.form['user-id'])
+            return render_template('index.html', loginInfo = userNickName)
     else:
-        # 그냥 로그인 페이지 요청했을 경우
         return render_template('login.html')
     
 @app.route('/logout')
@@ -39,6 +38,15 @@ def logout():
     if isUserLoggedIn():
         session.pop('userID', None)
         return redirect(url_for('index'))
+    
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        return render_template('signup.html')
+    else:
+        return render_template('signup.html')
+
         
     
 
