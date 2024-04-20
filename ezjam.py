@@ -42,6 +42,8 @@ def logout():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if isUserLoggedIn():
+        return render_template('error.html', errorMessage = "회원가입을 하려면 로그아웃하세요")
     if request.method == 'POST':
         return render_template('signup.html')
     else:

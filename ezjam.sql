@@ -89,12 +89,16 @@ DROP TABLE IF EXISTS `userinfo`;
 CREATE TABLE `userinfo` (
   `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `pw_hashed` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_local` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_domain` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_last` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_first` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sex` char(1) COLLATE utf8mb4_unicode_ci NOT NULL,
   `birthday` date NOT NULL,
   `phone` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `zipcode` char(5) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_local` (`email_local`,`email_domain`),
   UNIQUE KEY `phone` (`phone`),
@@ -120,4 +124,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-18 18:38:09
+-- Dump completed on 2024-04-21  1:08:24
