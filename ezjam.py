@@ -45,12 +45,13 @@ def signup():
     if isUserLoggedIn():
         return render_template('error.html', errorMessage = "회원가입을 하려면 로그아웃하세요")
     if request.method == 'POST':
-        return render_template('signup.html')
+        # 이하 테스트코드
+        return render_template('error.html', errorMessage = "입력한 아이디 : " + request.form['user-id'])
     else:
         return render_template('signup.html')
 
         
-    
+
 
 if __name__ == '__main__':
     app.run(debug=True)

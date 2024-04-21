@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 5.7.44, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
 --
 -- Host: localhost    Database: ezjam
 -- ------------------------------------------------------
--- Server version	5.7.44-log
+-- Server version	8.0.36-0ubuntu0.22.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -21,14 +21,14 @@
 
 DROP TABLE IF EXISTS `comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `post_id` int(11) NOT NULL,
-  `author_id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `author_nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `post_id` int NOT NULL,
+  `author_id` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author_nickname` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `content` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`),
   KEY `author_id` (`author_id`),
@@ -54,14 +54,14 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `posts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `posts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `author_id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `author_nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author_id` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author_nickname` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `author_id` (`author_id`),
   KEY `author_nickname` (`author_nickname`),
@@ -85,20 +85,20 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `userinfo`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `userinfo` (
-  `id` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pw_hashed` char(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nickname` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email_local` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email_domain` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name_last` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name_first` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sex` char(1) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pw_hashed` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nickname` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_local` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email_domain` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_last` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_first` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sex` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `birthday` date NOT NULL,
-  `phone` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `zipcode` char(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` char(11) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `zipcode` char(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_local` (`email_local`,`email_domain`),
   UNIQUE KEY `phone` (`phone`),
@@ -124,4 +124,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-04-21  1:08:24
+-- Dump completed on 2024-04-21  1:35:38

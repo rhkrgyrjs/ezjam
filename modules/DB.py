@@ -1,5 +1,6 @@
 import pymysql
 from . import SHA256
+from . import RegEx
 
 HOST = 'localhost'
 USER_NAME = 'root'
@@ -33,5 +34,6 @@ def loginValidation(userID, userPW):
         return None
     else:
         return data
-    
+
+print("ti")
     
