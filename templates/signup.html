@@ -3,44 +3,105 @@
 	<head>
     	<meta charset="utf-8">
    		<title>EzJam 회원가입</title>
+		<script>
+			// 이하 생일의 검증(현재보다 미래의 생일을 지정하는 경우)를 막기 위한 onload 함수 지정
+			function getCurrentDate() 
+			{
+				var today = new Date();
+				var year = today.getFullYear();
+				var month = String(today.getMonth() + 1).padStart(2, '0');
+				var day = String(today.getDate()).padStart(2, '0');
+				return year + '-' + month + '-' + day;
+			}
+
+			function setMinimumDate() 
+			{
+				var birthdateInput = document.getElementById('user-birthday');
+				birthdateInput.setAttribute('max', getCurrentDate());
+			}
+
+			window.onload = function() {setMinimumDate()};
+
+			// 이하 중복체크를 위한 ajax 함수
+			function userIdCheckAjax(userId)
+			{
+				alert("입력한 아이디 : " + userId);
+			}
+
+			function userNicknameCheckAjax(userNickname)
+			{
+				alert("입력한 닉네임 : " + userNickname)
+			}
+		</script>
 	</head>
 	<body>
 		<h3>임시 회원가입 페이지</h3>
 		<hr>
 		<form class="signup-form" method="POST" action="/signup">
-			<!-- id, pw, 닉네임, 이메일, 성, 이름, 성별, 생일, 전화번호, 주소, 우편번호 -->
-			<label for="userID">사용자 ID (8~16자, 영어 대소문자와 숫자 허용, 숫자로 시작하면 안 됨)</label>
-			<input type="text" id="userID" name="user-id" pattern="[0-9a-zA-Z]{8,16}" title="영어와 숫자를 허용합니다(8~16자). 숫자로 시작할 수 없습니다." required>
+			ID는 8~16자의 영어/숫자 조합입니다.
 			<br>
-			<label for="userPW">비밀번호 (8~20자, 영어 대소문자, 숫자, 특수문자 필수)</label>
-			<input type="password" id="userPW" name="user-pw" pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,20}$" title="숫자, 영어 소문자, 영어 대문자, 특수문자를 포함해야 합니다(8~20자)."  required>
+			ID : <input id="user-id" name="user-id" type="text" placeholder="사용할 ID 입력" required>
+			<button id="user-id-check" type="button" onclick="userIdCheckAjax(document.getElementById('user-id').value)">중복체크</button>
 			<br>
-			<label for="userEmailLocal">이메일</label>
-			<input type="text" id="userEmailLocal" name="user-email-local" pattern="^[a-zA-Z0-9._%+-]{2,64}$" title="이메일의 local 파트 형식에 맞춰야 합니다." required>
+			<div class="signupAlerts" id="user-id-alert"></div>
+			<br><br>
+			닉네임은 2~10자의 영어/한글/숫자 조합입니다.
 			<br>
-			<label for="userEmailDomain">도메인</label>
-			<input type="text" id="userEmailDomain" name="user-email-domain" pattern="^[a-zA-Z0-9.-]{1,63}(\.[a-zA-Z0-9.-]{1,63})*\.[a-zA-Z]{2,63}$" title="이메일의 domain 파트 형식에 맞춰야 합니다." required>
+			닉네임 : <input id="user-nickname" name="user-nickname" type="text" placeholder="사용할 닉네임 입력" required>
+			<button id="user-nickname-check" type="button" onclick="userNicknameCheckAjax(document.getElementById('user-nickname').value)">중복체크</button>
 			<br>
-			<label for="userLastName">성 (최대 50자, 한글/영어 허용)</label>
-			<input type="text" id="userLastName" name="user-last-name" pattern="^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{1,50}$" required>
+			<div class="signupAlerts" id="user-nickname-alert"></div>
+			<br><br>
+			PW는 8~20자의 영어/숫자/특수문자 조합입니다.<br>
+			영어 소문자, 영어 대문자, 숫자, 특수문자를 최소 하나 이상 포함해야 합니다.
 			<br>
-			<label for="userFirstName">이름 (최대 50자, 한글/영어 허용)</label>
-			<input type="text" id="userFirstName" name="user-first-name" pattern="^(?=.*[a-zA-Z가-힣])[a-zA-Z가-힣]{1,50}$" required>
+			PW : <input id="user-pw" name="user-pw" type="password" placeholder="사용할 비밀번호 입력" required>
 			<br>
-			<label for="userPhone">전화번호 (010-XXXX-XXXX 형식)</label>
-			<input type="tel" id="userPhone" name="user-phone" pattern="^010-\d{4}-\d{4}$" required>
+			<div class="signupAlerts" id="user-pw-alert"></div>
 			<br>
-			<label for="userNickname">닉네임 (2~10자, 한글/영어/숫자 허용)</label>
-			<input type="text" id="userNickname" name="user-nickname" pattern="^[a-zA-Z0-9가-힣]{2,10}$" required>
+			PW확인 : <input id="user-pw-val" name="user-pw-val" type="password" placeholder="비밀번호 확인" required>
 			<br>
-			<label for="userAddress">주소 (최대 100자, 한글/영어/숫자/특수문자 허용)</label>
-			<input type="text" id="userAddress" name="user-address" pattern="^[가-힣a-zA-Z0-9!#$%()*+,-./:;<=>?@\[\]^_`{|}~]{1,100}$" required>
+			<div class="signupAlerts" id="user-pw-val-alert"></div>
+			<br><br>
+			이메일 : <input id="user-email-local" name="user-email-local" type="text" placeholder="jhondoe" required>
+			@ <input id="user-email-domain" name="user-email-domain" placeholder="example.com" type="text" required>
+			<select id="email-domains">
+				<option value="self" default>직접 입력</option>
+				<option value="naver.com">naver.com</option>
+				<option value="gmail.com">gmail.com</option>
+				<option value="icloud.com">icloud.com</option>
+				<option value="daum.net">daum.net</option>
+				<option value="hanmail.net">hanmail.net</option>
+			</select>
 			<br>
-			<label for="userZipcode">우편번호 (5자리 숫자)</label>
-			<input type="text" id="userZipcode" name="user-zipcode" pattern="^\d{5}$" required>
+			<div class="signupAlerts" id="user-email-alert"></div>
+			<br><br>
+			이름 : <input id="user-last-name" name="user-last-name" type="text" placeholder="성" required>
+			<input id="user-first-name" name="user-first-name" type="text" placeholder="이름" required>
 			<br>
-			<input type="submit" value="가입하기">
+			<div class="signupAlerts" id="user-name-alert"></div>
+			<br><br>
+			성별 : 
+			<label><input id="user-sex-male" name="user-sex" type="radio" value="M" required> 남성</label>
+			<label><input id="user-sex-female" name="user-sex" type="radio" value="F" required> 여성</label>
+			<label><input id="user-sex-other" name="user-sex" type="radio" value="O" required> 기타</label>
 			<br>
+			<div class="signupAlerts" id="user-sex-alert"></div>
+			<br><br>
+			생일 : <input id="user-birthday" name="user_birthday" type="date" required>
+			<br>
+			<div class="signupAlerts" id="user-birthday-alert"></div>
+			<br><br>
+			전화번호 : <input id="user-phone-first" name="user-phone-first" type="text" value="010" disabled required>
+			- <input id="user-phone-middle" name="user-phone-middle" type="text" required>
+			- <input id="user-phone-last" name="user-phone-last" type="text" required>
+			<br>
+			<div class="signupAlerts" id="user-phone-alert"></div>
+			<br><br>
+			<!-- 여기에 주소 입력만 구현 하면 됨.. -->
+			<!-- 기본적인 입력 disabled, 카카오 api를 통해서만 입력 받기 -->
+			<!-- 상세주소는 직접 입력으로 받기 -->
+			<input type="submit" value="회원가입">
 		</form>
   	</body>
 </html>
