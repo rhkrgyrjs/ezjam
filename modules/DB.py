@@ -8,7 +8,7 @@ USER_PASSWORD = 'zoo@123456'
 DB_NAME = 'ezjam'
 
 # 쿼리문들
-LOGIN_VALIDATION_QUERY = "SELECT name, nickname FROM userinfo WHERE id=%s AND pw_hashed=%s"
+LOGIN_VALIDATION_QUERY = "SELECT nickname FROM userinfo WHERE id=%s AND pw_hashed=%s"
 
 # DB와 연결해 connection 객체 리턴하는 함수
 def getConnection():
@@ -34,6 +34,4 @@ def loginValidation(userID, userPW):
         return None
     else:
         return data
-
-print("ti")
     

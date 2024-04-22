@@ -3,18 +3,23 @@
 	<head>
     	<meta charset="utf-8">
    		<title>EzJam 로그인</title>
+		   <link rel="stylesheet" type="text/css" href="static/css/input.css">
 	</head>
 	<body>
-		<h3>임시 로그인 페이지</h3>
-		<hr>
-		<form class="login-form" method="POST" action="/login">
-			아이디 <input name="user-id" type="text" placeholder="아이디">
-			<br>
-			비밀번호 <input name="user-pw" type="password" placeholder="비밀번호">
-			<br>
-			<input type="submit" value="로그인">
-			<br>
-			<button onclick="location.href='/signup'">회원가입</button>
-		</form>
+		<div class="login-wrapper">
+			<h2>Login</h2>
+			<form id="login-form" method="POST" action="/login">
+				<input name="user-id" type="text" placeholder="아이디">
+				<input name="user-pw" type="password" placeholder="비밀번호">
+				<label for="remember-check">
+					<input type="checkbox" id="remember-check">아이디 저장하기
+				</label>
+				{% if loginMessage %}
+				<span style="color: red; font-size: 12px;">{{ loginMessage }}</span>
+				<br>
+				{% endif %}
+				<input type="submit" value="로그인">
+			</form>
+		</div>
   	</body>
 </html>

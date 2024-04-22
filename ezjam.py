@@ -25,9 +25,9 @@ def login():
         print('로그인 페이지 POST')
         userNameAndNickname = DB.loginValidation(request.form['user-id'], request.form['user-pw'])
         if not userNameAndNickname:
-            return render_template('login.html')
+            return render_template('login.html', loginMessage = "아이디 또는 비밀번호가 일치하지 않습니다.")
         else:
-            userNickName = userNameAndNickname[0][1]
+            userNickName = userNameAndNickname[0][0]
             session['userID'] = request.form['user-id']
             return render_template('index.html', loginInfo = userNickName)
     else:
