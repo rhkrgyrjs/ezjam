@@ -50,8 +50,12 @@ def signup():
     else:
         return render_template('signup.html')
 
-        
-
+@app.route('/game')
+def game():
+    if isUserLoggedIn():
+        return render_template('game.html', loginInfo = session['userID'])
+    else:
+        return render_template('error.html', errorMessage = "게임에 접속하려면 먼저 로그인해야 합니다.")
 
 if __name__ == '__main__':
     app.run(debug=True)
