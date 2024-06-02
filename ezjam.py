@@ -321,8 +321,10 @@ def community():
     # 총 페이지 수 계산
     total_pages = (total_count // per_page) + (1 if total_count % per_page > 0 else 0)
     
-    return render_template('community.html', posts=posts, page=page, total_pages=total_pages, loginInfo=session['userID'])
-
+    if isUserLoggedIn():
+        return render_template('community.html', posts=posts, page=page, total_pages=total_pages, loginInfo=session['userID'])
+    else:
+        return render_template('community.html', posts=posts, page=page, total_pages=total_pages)
 # 게시글 조회 페이지 핸들러
 @app.route('/post/<int:post_id>')
 def view_post(post_id):
