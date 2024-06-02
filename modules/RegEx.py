@@ -10,6 +10,10 @@ def regexCheck(pattern, text):
 def idCheck(id):
     return regexCheck("^[a-zA-Z][a-zA-Z\d]{7,15}$", id)
 
+# 닉네임 조건 : 2~10자 / 한글/영어/숫자 허용
+def nicknameCheck(nickname):
+    return regexCheck("^(?=.*[a-zA-Z가-힣0-9]).{2,10}$", nickname)
+
 # 비밀번호 조건 : 8~20자 / 영어,숫자,특수문자 허용 / 영어소문자,영어대문자,숫자,특수문자 각각 1개 이상씩 포함
 def passwordCheck(password):
     return regexCheck('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[a-zA-Z\d!@#$%^&*(),.?":{}|<>]{8,20}$', password)

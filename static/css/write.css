@@ -1,0 +1,58 @@
+@font-face 
+{
+  font-family: 'TmonMonsori';
+  src: url('../fonts/TmonMonsori.ttf') format('truetype');
+}
+
+.main-title
+{
+    display: block;
+    text-align: center;
+}
+
+.ck-editor__editable
+{
+    min-height: 400px;
+}
+
+.button-container
+{
+    text-align: right;
+    font-size: 20px;
+    padding: 10px 20px;
+}
+
+
+#title-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#title-label {
+    width: 100px; /* 라벨의 너비 조정 */
+    font-size: 25px;
+}
+
+#title {
+    flex: 1; /* 입력창이 남은 공간을 모두 채우도록 설정 */
+    padding: 10px;
+    font-size: 18px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+
+.button-container input[type='submit']
+{
+    display: inline-block; /* 인라인 요소로 설정 */
+    padding: 7px 14px; /* 내부 여백 설정 */
+    background-color: #4CAF50; /* 배경색 지정 */
+    color: white; /* 텍스트 색상 지정 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+    text-decoration: none; /* 텍스트에 밑줄 제거 */
+    border: none; /* 테두리 제거 */
+    border-radius: 20px; /* 버튼을 동그랗게 만들기 위한 속성 */
+    cursor: pointer; /* 커서 스타일 변경 */
+    font-size: 16px; /* 폰트 크기 지정 */
+    font-family: 'TmonMonsori', sans-serif; 
+}

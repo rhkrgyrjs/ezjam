@@ -1,107 +1,384 @@
 <!DOCTYPE html>
 <html lang="ko">
-	<head>
-    	<meta charset="utf-8">
-   		<title>EzJam 회원가입</title>
-		<script>
-			// 이하 생일의 검증(현재보다 미래의 생일을 지정하는 경우)를 막기 위한 onload 함수 지정
-			function getCurrentDate() 
-			{
-				var today = new Date();
-				var year = today.getFullYear();
-				var month = String(today.getMonth() + 1).padStart(2, '0');
-				var day = String(today.getDate()).padStart(2, '0');
-				return year + '-' + month + '-' + day;
-			}
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="static/css/signup.css">
+    <title>EzJam 회원가입</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("signupForm").addEventListener("keydown", function(event) {
+				if (event.key === "Enter") {
+					event.preventDefault();
+				}
+			});
+		});
+	</script>
+	
+    <script>
+        // 이하 생일의 검증(현재보다 미래의 생일을 지정하는 경우)을 막기 위한 onload 함수 지정
+        function getCurrentDate() {
+            var today = new Date();
+            var year = today.getFullYear();
+            var month = String(today.getMonth() + 1).padStart(2, '0');
+            var day = String(today.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
 
-			function setMinimumDate() 
-			{
-				var birthdateInput = document.getElementById('user-birthday');
-				birthdateInput.setAttribute('max', getCurrentDate());
-			}
+        function setMinimumDate() {
+            var birthdateInput = document.getElementById('user-birthday');
+            birthdateInput.setAttribute('max', getCurrentDate());
+        }
 
-			window.onload = function() {setMinimumDate()};
+        window.onload = function() { setMinimumDate(); };
 
-			// 이하 중복체크를 위한 ajax 함수
-			function userIdCheckAjax(userId)
-			{
-				alert("입력한 아이디 : " + userId);
-			}
+        // 이하 아이디 중복체크를 위한 ajax 함수
+        $(document).ready(function(){
+            $('#user-id').on('keypress', function(e){
+                if(e.which === 13){ // Enter key pressed
+                    e.preventDefault(); // 기본 동작 막기
+                    //checkUsername();
+                }
+            });
 
-			function userNicknameCheckAjax(userNickname)
-			{
-				alert("입력한 닉네임 : " + userNickname)
-			}
-		</script>
-	</head>
-	<body>
-		<h3>임시 회원가입 페이지</h3>
-		<hr>
-		<form class="signup-form" method="POST" action="/signup">
-			ID는 8~16자의 영어/숫자 조합입니다.
+            $('#user-id-check').on('click', function(){
+                checkUsername();
+            });
+
+            function checkUsername() {
+                var userid = $('#user-id').val();
+                $.ajax({
+                    url: '/check_userid',
+                    type: 'POST',
+                    data: {userid: userid},
+                    success: function(response){
+                        $('#user-id-dup-alert').text('');
+                        $('#user-id-reg-alert').text('');
+                        $('#user-id-dup-alert').text(response.message);
+                        if(response.status == 'error'){
+                            $('#user-id-dup-alert').addClass('text-danger');
+                        } else {
+                            $('#user-id-dup-alert').removeClass('text-danger');
+							$('#user-id').prop('disabled', true);
+							$('#user-id-check').prop('disabled', true);
+                        }
+                    }
+                });
+            }
+        });
+
+		// 이하 닉네임 중복체크를 위한 ajax 함수
+        $(document).ready(function(){
+            $('#user-nickname').on('keypress', function(e){
+                if(e.which === 13){ // Enter key pressed
+                    e.preventDefault(); // 기본 동작 막기
+                    //checkUsername();
+                }
+            });
+
+            $('#user-nickname-check').on('click', function(){
+                checkNickname();
+            });
+
+            function checkNickname() {
+                var usernickname = $('#user-nickname').val();
+                $.ajax({
+                    url: '/check_usernickname',
+                    type: 'POST',
+                    data: {usernickname: usernickname},
+                    success: function(response){
+                        $('#user-nickname-dup-alert').text('');
+                        $('#user-nickname-reg-alert').text('');
+                        $('#user-nickname-dup-alert').text(response.message);
+                        if(response.status == 'error'){
+                            $('#user-nickname-dup-alert').addClass('text-danger');
+                        } else {
+                            $('#user-nickname-dup-alert').removeClass('text-danger');
+							$('#user-nickname').prop('disabled', true);
+							$('#user-nickname-check').prop('disabled', true);
+                        }
+                    }
+                });
+            }
+        });
+
+		// 이하 회원가입을 위한 ajax 함수
+		$(document).ready(function(){
+			$('#signupButton').on('click', function(e){
+				e.preventDefault(); // 기본 동작 막기
+				//checkUsername();
+			});
+
+            $('#signupButton').on('click', function(){
+                signUp();
+            });
+
+            function signUp() {
+				var userid = $('#user-id').val();
+                var usernickname = $('#user-nickname').val();
+				var userpassword = $('#user-pw').val();
+				var userpasswordval = $('#user-pw-val').val();
+				var useremaillocal = $('#user-email-local').val();
+				var useremaildomain = $('#user-email-domain').val();
+				var userlastname = $('#user-last-name').val();
+				var userfirstname = $('#user-first-name').val();
+				// 성별은 어쩌지?
+				var usersex = $('input[name="user-sex"]:checked').val();
+				// --
+				var userbirthday = $('#user-birthday').val();
+				var userphone1 = $('#user-phone-first').val();
+				var userphone2 = $('#user-phone-middle').val();
+				var userphone3 = $('#user-phone-last').val();
+				var userzipcode = $('#sample6_postcode').val();
+				var useraddress = $('#sample6_address').val();
+				var useraddressdetail = $('#sample6_detailAddress').val();
+
+                $.ajax({
+                    url: '/signup',
+                    type: 'POST',
+                    data: {userid: userid,
+							usernickname: usernickname,
+							userpassword: userpassword,
+							userpasswordval: userpasswordval,
+							useremaillocal: useremaillocal,
+							useremaildomain: useremaildomain,
+							userlastname: userlastname,
+							userfirstname: userfirstname,
+							usersex: usersex,
+							userbirthday: userbirthday,
+							userphone1: userphone1,
+							userphone2: userphone2,
+							userphone3: userphone3,
+							userzipcode: userzipcode,
+							useraddress: useraddress,
+							useraddressdetail: useraddressdetail},
+                    success: function(response){
+                        if(response.status == 'error')
+                        {
+							// 오류 메시지 표시하는 루틴
+
+                            // 아이디 중복사용
+                            if (response.id_dup == 'error') { $('#user-id-dup-alert').text(response.id_dup_error); }
+                            else if (response.id_dup == 'success') { $('#user-id-dup-alert').text(""); }
+                            
+                            // 아이디 형식 문제
+                            if (response.id_reg == 'error') { $('#user-id-reg-alert').text(response.id_reg_error); }
+                            else if (response.id_reg == 'success') { $('#user-id-reg-alert').text(""); }
+
+                            // 닉네임 중복사용
+                            if (response.nickname_dup == 'error') { $('#user-nickname-dup-alert').text(response.nickname_dup_error); }
+                            else if (response.nickname_dup == 'success') { $('#user-nickname-dup-alert').text(""); }
+
+                            // 닉네임 형식 문제
+                            if (response.nickname_reg == 'error') { $('#user-nickname-reg-alert').text(response.nickname_reg_error); }
+                            else if (response.nickname_reg == 'success') { $('#user-nickname-reg-alert').text(""); }
+
+                            // 비밀번호 불일치
+                            if (response.password_val == 'error') { $('#user-pw-val-alert').text(response.password_val_error); }
+                            else if (response.password_val == 'success') { $('#user-pw-val-alert').text(""); }
+
+                            // 비밀번호 형식 문제
+                            if (response.password_reg == 'error') { $('#user-pw-alert').text(response.password_reg_error); }
+                            else if (response.password_reg == 'success') { $('#user-pw-alert').text(""); }
+
+                            // 사용중인 이메일
+                            if (response.email_dup == 'error') { $('#user-email-dup-alert').text(response.email_dup_error); }
+                            else if (response.email_dup == 'success') { $('#user-email-dup-alert').text(""); }
+
+                            // 이메일 형식 문제
+                            if (response.email_reg == 'error') { $('#user-email-reg-alert').text(response.email_reg_error); }
+                            else if (response.email_reg == 'success') { $('#user-email-reg-alert').text(""); }
+
+                            // 이름 형식 문제
+                            if (response.name_reg == 'error') { $('#user-name-alert').text(response.name_reg_error); }
+                            else if (response.name_reg == 'success') { $('#user-name-alert').text(""); }
+
+                            // 전화번호 중복 문제
+                            if (response.phone_dup == 'error') { $('#user-phone-dup-alert').text(response.phone_dup_error); }
+                            else if (response.phone_dup == 'success') { $('#user-phone-dup-alert').text(""); }
+
+                            // 전화번호 형식 문제
+                            if (response.phone_reg == 'error') { $('#user-phone-reg-alert').text(response.phone_reg_error); }
+                            else if (response.phone_reg == 'success') { $('#user-phone-reg-alert').text(""); }
+
+                            // 주소 형식 문제
+                            if (response.address_reg == 'error') { $('#user-address-reg-alert').text(response.address_reg_error); }
+                            else if (response.address_reg == 'success') { $('#user-address-reg-alert').text(""); }
+
+                            // 성별의 유효성 문제
+                            if (response.sex_reg == 'error') { $('#user-sex-alert').text(response.sex_reg_error); }
+                            else if (response.address_reg == 'success') { $('#user-sex-alert').text(""); }
+
+                            // 생일의 유효성 문제
+                            if (response.birth_reg == 'error') { $('#user-birthday-alert').text(response.birth_reg_error); }
+                            else if (response.birth_reg == 'success') { $('#user-birthday-alert').text(""); }
+
+
+                            // $('#signupAl').text(response.message);
+                            // $('#signupAl').addClass('text-danger');
+                        } 
+                        else if (response.status == 'success') 
+                        {
+								window.location.href = '/login';
+								alert('회원가입을 완료했습니다. 로그인 화면으로 이동합니다.')
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="main-title">
+      <a href="/">
+        <img width="120" height="100" src="static/logos/main_logo.png">
+      </a>
+    </div>
+    <div class="signup-wrapper">
+        <h2>회원가입</h2>
+        <form class="signup-form" id="signupForm" method="POST" action="/signup">
+            <!-- <label for="user-id">ID는 8~16자의 영어/숫자 조합입니다.</label> -->
+            <div class="form-row">
+				<label for="user-id">ID</label>
+                <input id="user-id" name="user-id" type="text" placeholder="사용할 ID 입력" required>
+                <button id="user-id-check" type="button">중복체크</button>
+            </div>
+            <div class="signupAlerts" id="user-id-dup-alert"></div>
+            <div class="signupAlerts" id="user-id-reg-alert"></div>
 			<br>
-			ID : <input id="user-id" name="user-id" type="text" placeholder="사용할 ID 입력" required>
-			<button id="user-id-check" type="button" onclick="userIdCheckAjax(document.getElementById('user-id').value)">중복체크</button>
+            <!-- <label for="user-nickname">닉네임은 2~10자의 영어/한글/숫자 조합입니다.</label> -->
+            <div class="form-row">
+				<label for="user-nickname">닉네임</label>
+                <input id="user-nickname" name="user-nickname" type="text" placeholder="사용할 닉네임 입력" required>
+                <button id="user-nickname-check" type="button">중복체크</button>
+            </div>
+            <div class="signupAlerts" id="user-nickname-dup-alert"></div>
+            <div class="signupAlerts" id="user-nickname-reg-alert"></div>
 			<br>
-			<div class="signupAlerts" id="user-id-alert"></div>
+            <!-- <label for="user-pw">PW는 8~20자의 영어/숫자/특수문자 조합입니다.</label> -->
+            <div class="signupAlerts"></div>
+            <div class="form-row">
+                <label for="user-pw">PW</label>
+                <input id="user-pw" name="user-pw" type="password" placeholder="사용할 비밀번호 입력" required>
+            </div>
+            <div class="signupAlerts" id="user-pw-alert"></div>
+			<br>
+            <div class="form-row">
+                <label for="user-pw-val">PW 확인</label>
+                <input id="user-pw-val" name="user-pw-val" type="password" placeholder="비밀번호 확인" required>
+            </div>
+            <div class="signupAlerts" id="user-pw-val-alert"></div>
+			<br>
+            <div class="form-row">
+                <label for="user-email-local">이메일</label>
+                <input id="user-email-local" name="user-email-local" type="text" placeholder="jhondoe" required> 
+                @ 
+                <input id="user-email-domain" name="user-email-domain" placeholder="example.com" type="text" required>
+                <select id="email-domains" onchange="if(this.value !== 'self') {document.getElementById('user-email-domain').value = this.value; document.getElementById('user-email-domain').disabled = true; } else {document.getElementById('user-email-domain').value=''; document.getElementById('user-email-domain').disabled = false; }">
+                    <option value="self" selected>직접 입력</option>
+                    <option value="naver.com">naver.com</option>
+                    <option value="gmail.com">gmail.com</option>
+                    <option value="icloud.com">icloud.com</option>
+                    <option value="daum.net">daum.net</option>
+                    <option value="hanmail.net">hanmail.net</option>
+                </select>
+            </div>
+            <div class="signupAlerts" id="user-email-dup-alert"></div>
+            <div class="signupAlerts" id="user-email-reg-alert"></div>
+			<br>
+            <div class="form-row">
+                <label>이름</label>
+                <input id="user-last-name" name="user-last-name" type="text" placeholder="성" required>
+                <input id="user-first-name" name="user-first-name" type="text" placeholder="이름" required>
+            </div>
+            <div class="signupAlerts" id="user-name-alert"></div>
+			<br>
+            <div class="form-row">
+                <label>성별</label>
+                <div class="radio-group" id="user-sex">
+                    <label><input id="user-sex-male" name="user-sex" type="radio" value="M" required> 남성</label>
+                    <label><input id="user-sex-female" name="user-sex" type="radio" value="F" required> 여성</label>
+                    <label><input id="user-sex-other" name="user-sex" type="radio" value="O" required> 기타</label>
+                </div>
+            </div>
+            <div class="signupAlerts" id="user-sex-alert"></div>
+			<br>
+            <div class="form-row">
+                <label for="user-birthday">생일</label>
+                <input id="user-birthday" name="user_birthday" type="date" required>
+            </div>
+            <div class="signupAlerts" id="user-birthday-alert"></div>
+			<br>
+            <div class="form-row">
+                <label for="user-phone-first">전화번호</label>
+                <input id="user-phone-first" name="user-phone-first" type="text" value="010" disabled required> 
+                <input id="user-phone-middle" name="user-phone-middle" type="text" required> 
+                <input id="user-phone-last" name="user-phone-last" type="text" required>
+            </div>
+            <div class="signupAlerts" id="user-phone-dup-alert"></div>
+            <div class="signupAlerts" id="user-phone-reg-alert"></div>
+			<br>
+			<input type="text" id="sample6_postcode" placeholder="우편번호" disabled required>
+			<input type="button" onclick="sample6_execDaumPostcode();" value="우편번호 찾기"><br>
+			<input type="text" id="sample6_address" placeholder="주소" disabled required><br>
+			<input type="text" id="sample6_detailAddress" placeholder="상세주소" disabled>
+            <div class="signupAlerts" id="user-address-reg-alert"></div>
+
+			<script>
+				function sample6_execDaumPostcode() {
+					new daum.Postcode({
+						oncomplete: function(data) {
+							// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+							// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+							// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+							var addr = ''; // 주소 변수
+							var extraAddr = ''; // 참고항목 변수
+
+							//사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+							if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+								addr = data.roadAddress;
+							} else { // 사용자가 지번 주소를 선택했을 경우(J)
+								addr = data.jibunAddress;
+							}
+
+							// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+							if(data.userSelectedType === 'R'){
+								// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+								// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+								if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+									extraAddr += data.bname;
+								}
+								// 건물명이 있고, 공동주택일 경우 추가한다.
+								if(data.buildingName !== '' && data.apartment === 'Y'){
+									extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+								}
+								// 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+								if(extraAddr !== ''){
+									extraAddr = ' (' + extraAddr + ')';
+								}
+								// 조합된 참고항목을 해당 필드에 넣는다.
+								// document.getElementById("sample6_extraAddress").value = extraAddr;
+							
+							} else {
+								// document.getElementById("sample6_extraAddress").value = '';
+							}
+
+							// 우편번호와 주소 정보를 해당 필드에 넣는다.
+							document.getElementById('sample6_postcode').value = data.zonecode;
+							document.getElementById("sample6_address").value = addr;
+							// 커서를 상세주소 필드로 이동한다.
+							document.getElementById("sample6_detailAddress").disabled = false;
+							document.getElementById("sample6_detailAddress").focus();
+						}
+					}).open();
+				}
+			</script>
 			<br><br>
-			닉네임은 2~10자의 영어/한글/숫자 조합입니다.
-			<br>
-			닉네임 : <input id="user-nickname" name="user-nickname" type="text" placeholder="사용할 닉네임 입력" required>
-			<button id="user-nickname-check" type="button" onclick="userNicknameCheckAjax(document.getElementById('user-nickname').value)">중복체크</button>
-			<br>
-			<div class="signupAlerts" id="user-nickname-alert"></div>
-			<br><br>
-			PW는 8~20자의 영어/숫자/특수문자 조합입니다.<br>
-			영어 소문자, 영어 대문자, 숫자, 특수문자를 최소 하나 이상 포함해야 합니다.
-			<br>
-			PW : <input id="user-pw" name="user-pw" type="password" placeholder="사용할 비밀번호 입력" required>
-			<br>
-			<div class="signupAlerts" id="user-pw-alert"></div>
-			<br>
-			PW확인 : <input id="user-pw-val" name="user-pw-val" type="password" placeholder="비밀번호 확인" required>
-			<br>
-			<div class="signupAlerts" id="user-pw-val-alert"></div>
-			<br><br>
-			이메일 : <input id="user-email-local" name="user-email-local" type="text" placeholder="jhondoe" required>
-			@ <input id="user-email-domain" name="user-email-domain" placeholder="example.com" type="text" required>
-			<select id="email-domains">
-				<option value="self" default>직접 입력</option>
-				<option value="naver.com">naver.com</option>
-				<option value="gmail.com">gmail.com</option>
-				<option value="icloud.com">icloud.com</option>
-				<option value="daum.net">daum.net</option>
-				<option value="hanmail.net">hanmail.net</option>
-			</select>
-			<br>
-			<div class="signupAlerts" id="user-email-alert"></div>
-			<br><br>
-			이름 : <input id="user-last-name" name="user-last-name" type="text" placeholder="성" required>
-			<input id="user-first-name" name="user-first-name" type="text" placeholder="이름" required>
-			<br>
-			<div class="signupAlerts" id="user-name-alert"></div>
-			<br><br>
-			성별 : 
-			<label><input id="user-sex-male" name="user-sex" type="radio" value="M" required> 남성</label>
-			<label><input id="user-sex-female" name="user-sex" type="radio" value="F" required> 여성</label>
-			<label><input id="user-sex-other" name="user-sex" type="radio" value="O" required> 기타</label>
-			<br>
-			<div class="signupAlerts" id="user-sex-alert"></div>
-			<br><br>
-			생일 : <input id="user-birthday" name="user_birthday" type="date" required>
-			<br>
-			<div class="signupAlerts" id="user-birthday-alert"></div>
-			<br><br>
-			전화번호 : <input id="user-phone-first" name="user-phone-first" type="text" value="010" disabled required>
-			- <input id="user-phone-middle" name="user-phone-middle" type="text" required>
-			- <input id="user-phone-last" name="user-phone-last" type="text" required>
-			<br>
-			<div class="signupAlerts" id="user-phone-alert"></div>
-			<br><br>
-			<!-- 여기에 주소 입력만 구현 하면 됨.. -->
-			<!-- 기본적인 입력 disabled, 카카오 api를 통해서만 입력 받기 -->
-			<!-- 상세주소는 직접 입력으로 받기 -->
-			<input type="submit" value="회원가입">
-		</form>
-  	</body>
+            <input type="submit" id="signupButton" value="회원가입">
+			<div id='signupAl'></div>
+        </form>
+    </div>
+</body>
 </html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
+    <title>EzJam 자유게시판</title>
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="static/css/community.css">
+</head>
+<body>  
+    <!-- 이하 상단 부분 -->
+    <div class="main-title">
+      <a href="/">
+        <img width="120" height="100" src="static/logos/main_logo.png">
+      </a>
+    </div>
+    <!-- 로그인/회원가입 버튼 부분 -->
+    {% if not loginInfo %}
+    <div class="buttons">
+      <button id="login-button" onclick="location.href='/login'">로그인</button>
+      <button id="signup-button" onclick="location.href='/signup'">회원가입</button>
+    </div>
+    {% endif %}
+    {% if loginInfo %}
+    <div class="buttons">
+      <span>환영합니다! {{loginInfo}} 님!  </span>
+      <button id="logout-button" onclick="location.href='/logout'">로그아웃</button>
+    </div>
+    {% endif %}
+    <br>
+    <!-- 이하 네비게이션 바 부분 -->
+    <div class="navbar">
+      <a href="/notice">공지사항</a>
+      <a href="/community">자유게시판</a>
+      <a href="/rank">랭킹</a>
+      <a href="/event">이벤트 일정</a>
+      <!--
+      <div class="dropdown">
+        <button class="dropbtn">Dropdown 
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div> -->
+    </div>
+    <!-- 이하 -->
+    <div class="main-content">
+        <div class="container">
+            <br>
+            <h1><strong><a style="color:#4CAF50;">자유게시판</a></strong></h1>
+            <div class='button-container'>
+                <button id='upload-button' onclick="location.href='/write'">글쓰기</button>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>글번호</th>
+                        <th>작성자</th>
+                        <th style='width: 70%;'>제목</th>
+                        <th>작성시각</th>
+                        <!-- <th>조회수</th> -->
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>{{ post[0] }}</td>
+                            <td>{{ post[2] }}</td>
+                            <td><a style="color:#110957;" href="/post/{{ post[0] }}">{{ post[1] }}</a></td>
+                            <td>{{ post[3].strftime('%H:%M') }}&nbsp;&nbsp;&nbsp;&nbsp;{{ post[3].strftime('%m/%d') }}</td>
+                            <!-- <td>{{ post['view'] }}</td> -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="pagination">
+        {% if page > 1 %}
+            <a href="?page={{ page - 1 }}">&#60;&#60; 이전 페이지   </a>
+        {% endif %}
+        
+        {% if page < total_pages %}
+            <a href="?page={{ page + 1 }}">   다음 페이지 &#62;&#62;</a>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS -->
+</body>
+</html>
