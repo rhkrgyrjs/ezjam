@@ -16,7 +16,12 @@ USER_PHONE_CHECK_QUERY = 'SELECT phone FROM userinfo WHERE phone=%s'
 SIGNUP_QUERY = "INSERT INTO userinfo (id, pw_hashed, nickname, email_local, email_domain, name_last, name_first, sex, birthday, phone, address, zipcode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 USER_NICKNAME_QUERY = "SELECT nickname FROM userinfo WHERE id=%s"
 WRITE_ARTICLE_QUERY = "INSERT INTO posts (title, author_id, author_nickname, content) VALUES (%s, %s, %s, %s)"
-POST_SEARCH_QUERY = "SELECT title, author_nickname, content FROM posts WHERE id=%s"
+POST_SEARCH_QUERY = "SELECT title, author_nickname, created_at, views, content, id FROM posts WHERE id=%s"
+VIEWS_INCREASE_QUERY = "UPDATE posts SET views = views + 1 WHERE id = %s"
+COMMENTS_FETCH_QUERY = "SELECT author_nickname, created_at, content, id FROM comments WHERE post_id=%s ORDER BY created_at DESC"
+REPLYS_FETCH_QUERY = "SELECT author_nickname, created_at, content, comment_id FROM replys WHERE post_id=%s ORDER BY created_at DESC"
+WRITE_COMMENT_QUERY = "INSERT INTO comments (post_id, author_id, author_nickname, content) VALUES (%s, %s, %s, %s)"
+WRITE_REPLY_QUERY = "INSERT INTO replys (post_id, comment_id, author_id, author_nickname, content) VALUES (%s, %s, %s, %s, %s)"
 
 # DB와 연결해 connection 객체 리턴하는 함수
 def getConnection():
@@ -85,6 +90,7 @@ def userEmailCheck(userEmailLocal, userEmailDomain):
     cursor.execute(USER_EMAIL_CHECK_QUERY, value)
     data = cursor.fetchall()
     cursor.close()
+    connection.close()
     if not data:
         return True
     else:
@@ -100,6 +106,7 @@ def userPhoneCheck(userPhone):
     cursor.execute(USER_PHONE_CHECK_QUERY, value)
     data = cursor.fetchall()
     cursor.close()
+    connection.close()
     if not data:
         return True
     else:
@@ -124,6 +131,7 @@ def get_nickname_with_id(userid):
     cursor.execute(USER_NICKNAME_QUERY, value)
     data = cursor.fetchall()
     cursor.close()
+    connection.close()
     if data:
         return data[0][0]
     else:
@@ -141,7 +149,7 @@ def write_article(authorId, authorNickname, title, content):
     connection.close()
     return str(last_row_id)
 
-# 임시 함수 : 포스트 conetent 가져오는 함수
+# 게시글 조회하는 함수
 def get_post(postId):
     connection = getConnection()
     cursor = connection.cursor()
@@ -149,7 +157,71 @@ def get_post(postId):
     cursor.execute(POST_SEARCH_QUERY, int(value))
     data = cursor.fetchall()
     cursor.close()
+    connection.close()
     if data:
-        return data[0][0], data[0][1], data[0][2]
+        return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][5]
     else:
-        return False, False, False
+        return False, False, False, False, False
+
+# 댓글 불러온느 함수
+def get_comments(postId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (postId)
+    cursor.execute(COMMENTS_FETCH_QUERY, int(value))
+    data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    if data:
+        print('댓글', data)
+        return data
+    else:
+        return False
+    
+# 대댓글 불러오는 함수
+def get_replys(postId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (postId)
+    cursor.execute(REPLYS_FETCH_QUERY, int(value))
+    data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    if data:
+        print('대댓글', data)
+        return data
+    else:
+        return False
+    
+# 게시글 조회수 올리는 함수
+def view_count_post(postId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (postId)
+    cursor.execute(VIEWS_INCREASE_QUERY, int(value))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    
+# 댓글 작성 함수
+def write_comment(postId, authorId, content):
+    authorNickname = get_nickname_with_id(authorId)
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (postId, authorId, authorNickname, content)
+    cursor.execute(WRITE_COMMENT_QUERY, value)
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+# 대댓글 작성 함수
+def write_reply(postId, commentId, authorId, content):
+    authorNickname = get_nickname_with_id(authorId)
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (postId, commentId, authorId, authorNickname, content)
+    cursor.execute(WRITE_REPLY_QUERY, value)
+    connection.commit()
+    cursor.close()
+    connection.close()
+    

@@ -1,13 +1,117 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <title>게시글 조회</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/post.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
 </head>
+
+<!--   
+    구현해야할 기능들
+    1. posts에 조회수, 댓글수 column 추가
+    2. ezjam.py에서 post창 조회 핸들러 함수에 작성일시, 조회수, 댓글수 리턴하는 로직 추가
+    3. 댓글/대댓글 작성하는 http post form 추가
+    4. ezjam.py에서 댓글/대댓글 조회해 리턴하는 로직 추가
+    5. 글쓴이일 경우 글수정, 글삭제 기능 추가하기
+    6. 댓글쓴이일 경우 글수정, 글삭제 기능 추가하기(댓글삭제는 DB에서 댓글 row를 없애는게 아니라, 내용만  '삭제된 댓글'식으로 바꾸는 식.
+                                                    아니라면 CASCADE 조건으로 대댓글까지 다 삭제하기. 수정된 댓글은 '수정됨' 딱지 붙이기)
+    7. community 페이지에 글 제목/글쓴이로 검색 기능 넣기
+
+    공지사항 : '관리자'등급인 회원만 글을 쓸 수 있고, 댓글 기능이 없음
+    이벤트 일정 : 이벤트 주체자의 닉네임, 이벤트 기간, 구체적 설명을 글쓰기 단계에서 입력받음. 조회 페이지도 다름
+    개인정보 수정 : 회원가입 페이지 수정해서 만들기
+
+    실시간 채팅
+     -> 소켓 통신을 이용
+
+-->
+
+
 <body>
-    <h1>{{ title }}</h1>
-    <p>작성자: {{ author_nickname }}</p>
-    {{ content | safe }}
+    <div class="container">
+        <div class="post">
+            <div class="post-header">
+                <h2>{{ title }}</h2>
+                <div class="post-meta">
+                    {% if nickname %}
+                    작성자: {{ nickname }} | {{ timestamp.strftime('%Y-%m-%d %H:%M') }} | 조회수: {{ views }} | 댓글수: {% if comments != False %} {{ (comments | length) + (replys | length) }} {% endif %} {% if comments == False %} 0 {% endif %}
+                    {% endif %}
+                </div>
+                <hr>
+            </div>
+            <div class="post-content">
+                <p>{{ content | safe }}</p>
+            </div>
+        </div>
 
+        {% if nickname %}
+        <div class="comment-form">
+            <form action="/post/{{ post_id }}" method="POST">
+                <h3>댓글 작성</h3>
+                <textarea name="comment" placeholder="댓글을 입력하세요. (1~1000자)"></textarea>
+                <button type="submit">댓글쓰기</button>
+            </form>
+        </div>
 
+        <div class="comments">
+            <h3>댓글</h3>
+            {% if comments != False %}
+            {% for comment in comments %}
+            <div class="comment">
+                <div class="comment-meta">
+                    작성자: {{ comment[0] }} | 작성일시: {{ comment[1].strftime('%Y-%m-%d %H:%M') }}
+                </div>
+                <div class="comment-content">
+                    <p>{{ comment[2] }}</p>
+                </div>
+
+                <div class="reply-form" style="display: none;">
+                    <form action="/post/{{ post_id }}/{{ comment[3] }}" method='POST'>
+                        <textarea name="reply" placeholder="대댓글을 입력하세요. (1~1000자)"></textarea>
+                        <button type="submit">대댓글쓰기</button>
+                    </form>
+                </div>
+                {% if replys != False %}
+                {% for reply in replys%}
+                {% if reply[3] == comment[3] %}
+                <!-- <button class="reply-toggle">대댓글쓰기</button> -->
+                <div class="replies">
+                    <div class="reply">
+                        <div class="reply-meta">
+                            작성자: {{ reply[0] }} | 작성일시: {{ reply[1].strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                        <div class="reply-content">
+                            <p>{{ reply[2] }}</p>
+                        </div>
+                    </div>
+                    <!-- 추가 대댓글은 여기 추가 -->
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <!-- 추가 댓글은 여기 추가 -->
+        </div>
+        {% endif %}
+
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var replyToggles = document.querySelectorAll('.comment-content');
+            replyToggles.forEach(function(toggle) {
+                toggle.addEventListener('click', function() {
+                    var replyForm = this.nextElementSibling;
+                    if (replyForm.style.display === "none") {
+                        replyForm.style.display = "block";
+                    } else {
+                        replyForm.style.display = "none";
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

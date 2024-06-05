@@ -325,15 +325,58 @@ def community():
         return render_template('community.html', posts=posts, page=page, total_pages=total_pages, loginInfo=session['userID'])
     else:
         return render_template('community.html', posts=posts, page=page, total_pages=total_pages)
+
 # 게시글 조회 페이지 핸들러
-@app.route('/post/<int:post_id>')
+@app.route('/post/<int:post_id>', methods=['GET', 'POST'])
 def view_post(post_id):
     ## 임시
-    title, author_nickname, content= DB.get_post(str(post_id))
+    if request.method == 'POST':
+        # 댓글쓰기
+        if isUserLoggedIn() == False:
+            return redirect(url_for('login'))
+        else:
+            print(request.form['comment'])
+            if len(str(request.form['comment'])) > 0 and len(str(request.form['comment'])) < 1001:
+                # 댓글 작성 로직
+                DB.write_comment(post_id, session['userID'], request.form['comment'])
+    # 글 조회
+    title, author_nickname, created_at, views, content, id = DB.get_post(str(post_id))
     if title:
-        return render_template('post.html', title=title, nickname=author_nickname, content=content)
+        DB.view_count_post(post_id)
+            
+    if title:
+        comments = DB.get_comments(post_id)
+        replys = DB.get_replys(post_id)
+                    
+        return render_template('post.html', post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
     else:
-        return render_template('post.html', title='게시글을 찾을 수 없습니다.', nickname='?', content='?')
-
+        return render_template('post.html', title='게시글을 찾을 수 없습니다.')
+    
+# 게시글 조회 페이지 핸들러
+@app.route('/post/<int:post_id>/<int:comment_id>', methods=['GET', 'POST'])
+def write_reply(post_id, comment_id):
+    ## 임시
+    if request.method == 'POST':
+        # 댓글쓰기
+        if isUserLoggedIn() == False:
+            return redirect(url_for('login'))
+        else:
+            print(request.form['reply'])
+            if len(str(request.form['reply'])) > 0 and len(str(request.form['reply'])) < 1001:
+                # 댓글 작성 로직
+                DB.write_reply(post_id, comment_id, session['userID'], request.form['reply'])
+    # 글 조회
+    title, author_nickname, created_at, views, content, id = DB.get_post(str(post_id))
+    if title:
+        DB.view_count_post(post_id)
+            
+    if title:
+        comments = DB.get_comments(post_id)
+        replys = DB.get_replys(post_id)
+                    
+        return render_template('post.html', post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
+    else:
+        return render_template('post.html', title='게시글을 찾을 수 없습니다.')
+    
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
