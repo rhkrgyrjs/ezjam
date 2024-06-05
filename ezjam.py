@@ -348,7 +348,7 @@ def view_post(post_id):
         comments = DB.get_comments(post_id)
         replys = DB.get_replys(post_id)
                     
-        return render_template('post.html', post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
+        return render_template('post.html', loginInfo=session['userID'], post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
     else:
         return render_template('post.html', title='게시글을 찾을 수 없습니다.')
     
@@ -374,7 +374,7 @@ def write_reply(post_id, comment_id):
         comments = DB.get_comments(post_id)
         replys = DB.get_replys(post_id)
                     
-        return render_template('post.html', post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
+        return render_template('post.html', loginInfo=session['userID'], post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
     else:
         return render_template('post.html', title='게시글을 찾을 수 없습니다.')
     
