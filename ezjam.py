@@ -9,10 +9,17 @@ from werkzeug.utils import secure_filename
 
 app = Flask('EzJam Web')
 app.secret_key = 'zoo@123456'
+ADMIN_ID = 'rhkrgyrjsl'
 
 # 유저가 로그인되어있나 확인하는 함수
 def isUserLoggedIn():
     if 'userID' in session:
+        return True
+    else:
+        return False
+
+def isUserAdmin():
+    if 'userID' in session and session['userID'] == ADMIN_ID:
         return True
     else:
         return False
@@ -31,7 +38,6 @@ def login():
     if isUserLoggedIn():
         return render_template('error.html', errorMessage = "이미 로그인 중입니다.")
     if request.method == 'POST':
-        print('로그인 페이지 POST')
         userNameAndNickname = DB.loginValidation(request.form['user-id'], request.form['user-pw'])
         if not userNameAndNickname:
             return render_template('login.html', loginMessage = "아이디 또는 비밀번호가 일치하지 않습니다.")
@@ -182,7 +188,6 @@ def signup():
         else:
             response['birth_reg'] = 'success'
         
-        print(response)
         return jsonify(response)
     else:
         return render_template('signup.html')
@@ -249,12 +254,7 @@ def write_post():
     
     # POST 요청시 글 작성
     if request.method == 'POST':
-        print(request.form['title'])
-        print(request.form['content'])
-        print(session['userID'])
-        print(DB.get_nickname_with_id(session['userID']))
         num_article = DB.write_article(session['userID'], DB.get_nickname_with_id(session['userID']), request.form['title'], request.form['content'])
-        print('글번호 : ' + str(num_article))
         # 테스트
         return redirect('/post/' + num_article)
             
@@ -306,25 +306,51 @@ def community():
     # 페이지 번호 및 페이지당 게시물 수
     page = request.args.get('page', 1, type=int)
     per_page = 10
+    search_query = request.args.get('search', '')
+    search_type = request.args.get('search_type', 'title')
     
-    # 게시물 가져오기 (페이징 기능 추가)
+    # 시작 인덱스 계산
     start_index = (page - 1) * per_page
     
     connection = DB.getConnection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, title, author_nickname, created_at FROM posts ORDER BY created_at DESC LIMIT %s, %s", (start_index, per_page))
-    posts = cursor.fetchall()
-    cursor.execute("SELECT COUNT(*) AS count FROM posts")
-    total_count = cursor.fetchone()[0]
+
+    if search_query:
+        if search_type == 'title':
+            cursor.execute(
+                "SELECT id, title, author_nickname, created_at FROM posts WHERE title LIKE %s ORDER BY created_at DESC LIMIT %s, %s", 
+                ('%' + search_query + '%', start_index, per_page)
+            )
+            posts = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) AS count FROM posts WHERE title LIKE %s", ('%' + search_query + '%',))
+        elif search_type == 'author':
+            cursor.execute(
+                "SELECT id, title, author_nickname, created_at FROM posts WHERE author_nickname LIKE %s ORDER BY created_at DESC LIMIT %s, %s", 
+                ('%' + search_query + '%', start_index, per_page)
+            )
+            posts = cursor.fetchall()
+            cursor.execute("SELECT COUNT(*) AS count FROM posts WHERE author_nickname LIKE %s", ('%' + search_query + '%',))
+    else:
+        cursor.execute("SELECT id, title, author_nickname, created_at FROM posts ORDER BY created_at DESC LIMIT %s, %s", (start_index, per_page))
+        posts = cursor.fetchall()
+        cursor.execute("SELECT COUNT(*) AS count FROM posts")
+
+    count_result = cursor.fetchone()
+    if count_result:
+        total_count = count_result[0]
+    else:
+        total_count = 0
+
     cursor.close()
     connection.close()
+
     # 총 페이지 수 계산
     total_pages = (total_count // per_page) + (1 if total_count % per_page > 0 else 0)
     
-    if isUserLoggedIn():
-        return render_template('community.html', posts=posts, page=page, total_pages=total_pages, loginInfo=session['userID'])
+    if 'userID' in session:
+        return render_template('community.html', posts=posts, page=page, total_pages=total_pages, loginInfo=session['userID'], search_query=search_query, search_type=search_type)
     else:
-        return render_template('community.html', posts=posts, page=page, total_pages=total_pages)
+        return render_template('community.html', posts=posts, page=page, total_pages=total_pages, search_query=search_query, search_type=search_type)
 
 # 게시글 조회 페이지 핸들러
 @app.route('/post/<int:post_id>', methods=['GET', 'POST'])
@@ -335,7 +361,6 @@ def view_post(post_id):
         if isUserLoggedIn() == False:
             return redirect(url_for('login'))
         else:
-            print(request.form['comment'])
             if len(str(request.form['comment'])) > 0 and len(str(request.form['comment'])) < 1001:
                 # 댓글 작성 로직
                 DB.write_comment(post_id, session['userID'], request.form['comment'])
@@ -347,8 +372,11 @@ def view_post(post_id):
     if title:
         comments = DB.get_comments(post_id)
         replys = DB.get_replys(post_id)
-                    
-        return render_template('post.html', loginInfo=session['userID'], post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
+        
+        if isUserLoggedIn() == True:
+            return render_template('post.html', loginInfo=session['userID'], post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
+        else:
+            return render_template('post.html', post_id=id, title=title, nickname=author_nickname, timestamp=created_at, views=views, content=content, comments=comments, replys=replys)
     else:
         return render_template('post.html', title='게시글을 찾을 수 없습니다.')
     
@@ -361,7 +389,6 @@ def write_reply(post_id, comment_id):
         if isUserLoggedIn() == False:
             return redirect(url_for('login'))
         else:
-            print(request.form['reply'])
             if len(str(request.form['reply'])) > 0 and len(str(request.form['reply'])) < 1001:
                 # 댓글 작성 로직
                 DB.write_reply(post_id, comment_id, session['userID'], request.form['reply'])
@@ -378,5 +405,127 @@ def write_reply(post_id, comment_id):
     else:
         return render_template('post.html', title='게시글을 찾을 수 없습니다.')
     
+# 공지사항 조회 페이지 핸들러
+@app.route('/notice')
+def notice():
+    # 페이지 번호 및 페이지당 게시물 수
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    search_query = request.args.get('search', '')
+    
+    # 시작 인덱스 계산
+    start_index = (page - 1) * per_page
+    
+    connection = DB.getConnection()
+    cursor = connection.cursor()
+
+    if search_query:
+        cursor.execute(
+            "SELECT id, title, created_at FROM notice WHERE title LIKE %s ORDER BY created_at DESC LIMIT %s, %s", 
+            ('%' + search_query + '%', start_index, per_page)
+        )
+        notice = cursor.fetchall()
+        cursor.execute("SELECT COUNT(*) AS count FROM notice WHERE title LIKE %s", ('%' + search_query + '%',))
+    else:
+        cursor.execute("SELECT id, title, created_at FROM notice ORDER BY created_at DESC LIMIT %s, %s", (start_index, per_page))
+        notice = cursor.fetchall()
+        cursor.execute("SELECT COUNT(*) AS count FROM notice")
+
+    count_result = cursor.fetchone()
+    total_count = count_result[0] if count_result else 0
+
+    cursor.close()
+    connection.close()
+
+    # 총 페이지 수 계산
+    total_pages = (total_count // per_page) + (1 if total_count % per_page > 0 else 0)
+
+
+    isAdmin = isUserAdmin()
+    
+    if 'userID' in session:
+        return render_template('notice.html', notice=notice, page=page, total_pages=total_pages, loginInfo=session['userID'], search_query=search_query, isUserAdmin=isAdmin)
+    else:
+        return render_template('notice.html', notice=notice, page=page, total_pages=total_pages, search_query=search_query, isUserAdmin=isAdmin)
+
+# 공지사항 조회 핸들러 함수
+@app.route('/post_notice/<int:notice_id>')
+def view_notice(notice_id):
+    # 글 조회
+    title, created_at, views, content, id = DB.get_notice(str(notice_id))
+    if title:
+        DB.view_count_notice(notice_id)
+        
+        if isUserLoggedIn() == True:
+            return render_template('post_notice.html', loginInfo=session['userID'], post_id=id, title=title, timestamp=created_at, views=views, content=content)
+        else:
+            return render_template('post_notice.html', post_id=id, title=title, timestamp=created_at, views=views, content=content)
+    else:
+        return render_template('post_notice.html', title='게시글을 찾을 수 없습니다.')
+
+# 공지사항 작성 핸들러
+@app.route('/write_notice', methods=['GET', 'POST'])
+def write_notice():
+    # 로그인하지 않은 유저가 글쓰기 페이지에 접속하면, 로그인 페이지로 리다이렉션
+    if not(isUserLoggedIn()):
+        return render_template('login.html')
+
+    # 글쓰기 페이지에 접속(GET) 요청을 한 경우, 글쓰기 페이지만 렌더링함.
+    if request.method == 'GET' and isUserAdmin():
+        return render_template('write_notice.html')
+    
+    # POST 요청시 글 작성
+    if request.method == 'POST':
+        num_article = DB.write_notice(request.form['title'], request.form['content'])
+        # 테스트
+        return redirect('/post_notice/' + num_article)
+
+# 이벤트 정보 창 핸들링 함수
+@app.route('/event')
+def event():
+    isAdmin = isUserAdmin()
+    if isUserLoggedIn():
+        return render_template('event.html', isUserAdmin=isAdmin, loginInfo=session['userID'])
+    else:
+        return render_template('event.html', isUserAdmin=isAdmin)
+
+# 이벤트 정보를 리턴하는 함수
+@app.route('/get_event_info')
+def get_event_info():
+    events = DB.get_events()
+    return jsonify(events)
+
+# 이벤트 정보를 조회하는 핸들러
+@app.route('/post_event/<int:event_id>')
+def view_event(event_id):
+    # 글 조회
+    title, created_at, views, content, id, start_time, end_time = DB.get_event(str(event_id))
+    if title:
+        DB.view_count_event(event_id)
+
+        if isUserLoggedIn() == True:
+            return render_template('post_event.html', loginInfo=session['userID'], event_id=id, title=title, timestamp=created_at, views=views, content=content, start_time=start_time, end_time=end_time)
+        else:
+            return render_template('post_event.html', event_id=id, title=title, timestamp=created_at, views=views, content=content, start_time=start_time, end_time=end_time)
+    else:
+        return render_template('post_event.html', title='게시글을 찾을 수 없습니다.')
+
+# 이벤트 작성 작성 핸들러
+@app.route('/write_event', methods=['GET', 'POST'])
+def write_event():
+    # 로그인하지 않은 유저가 글쓰기 페이지에 접속하면, 로그인 페이지로 리다이렉션
+    if not(isUserLoggedIn()):
+        return render_template('login.html')
+
+    # 글쓰기 페이지에 접속(GET) 요청을 한 경우, 글쓰기 페이지만 렌더링함.
+    if request.method == 'GET' and isUserAdmin():
+        return render_template('write_event.html')
+    
+    # POST 요청시 글 작성
+    if request.method == 'POST':
+        num_article = DB.write_event(request.form['title'], request.form['content'], request.form['start_time'], request.form['end_time'])
+        # 테스트
+        return redirect('/post_event/' + num_article)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

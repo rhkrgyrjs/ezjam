@@ -22,11 +22,18 @@
     padding: 10px 20px;
 }
 
-
 #title-container {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     margin-bottom: 10px;
+}
+
+#title-container label,
+#title-container input[type="date"],
+#title-container input[type="text"] {
+    margin-right: 10px; /* 각 요소 사이의 간격을 조정할 수 있습니다 */
+    margin-bottom: 10px; /* 다음 줄과의 간격을 조정할 수 있습니다 */
 }
 
 #title-label {

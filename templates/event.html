@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
+    <title>EzJam 이벤트 일정</title>
+    <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="static/css/community.css">
+    <link rel="stylesheet" type="text/css" href="static/css/calendar.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko'></script>
+</head>
+<body>  
+    <div class="main-title">
+      <a href="/">
+        <img width="120" height="100" src="static/logos/main_logo.png">
+      </a>
+    </div>
+    {% if not loginInfo %}
+    <div class="buttons">
+      <button id="login-button" onclick="location.href='/login'">로그인</button>
+      <button id="signup-button" onclick="location.href='/signup'">회원가입</button>
+    </div>
+    {% endif %}
+    {% if loginInfo %}
+    <div class="buttons">
+      <span>환영합니다! {{loginInfo}} 님!  </span>
+      <button id="logout-button" onclick="location.href='/logout'">로그아웃</button>
+    </div>
+    {% endif %}
+    <br>
+    <div class="navbar">
+      <a href="/notice">공지사항</a>
+      <a href="/community">자유게시판</a>
+      <a href="/rank">랭킹</a>
+      <a href="/event">이벤트 일정</a>
+    </div>
+    <div class="main-content">
+        <div class="container">
+            <br>
+            <h1><strong><a style="color:#4CAF50;">이벤트 일정</a></strong></h1>
+            <div class='button-container'>
+              {% if isUserAdmin == True %}
+              <button id='upload-button' onclick="location.href='/write_event'">이벤트 공지 작성(관리자 전용)</button>
+              {% endif %}
+            </div>
+            <div id='calendar'></div>
+        </div>
+    </div>
+    <script>
+        // fullCalendar 관련 코드
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ko', // 한글 로케일 설정
+                events: '/get_event_info', // 서버에서 이벤트 정보 받아오기
+                eventClick: function(info) {
+                    // 이벤트를 클릭하면 해당 이벤트의 URL로 이동
+                    if (info.event.id) {
+                        window.location.href = 'post_event/' + info.event.id;
+                    }
+                }
+            });
+            calendar.render();
+        });
+
+    </script>
+</body>
+</html>

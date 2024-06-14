@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>(관리자)이벤트 공지 작성</title>
+    <!-- ckeditor -->
+    <link rel="stylesheet" type="text/css" href="static/css/write.css">
+    <script src="static/ckeditor/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+</head>
+<body>
+    <div class="main-title">
+      <a href="/">
+        <img width="120" height="100" src="static/logos/main_logo.png">
+      </a>
+    </div>
+
+    <form action="/write_event" method="POST"> 
+        <h1>이벤트 공지 작성</h1>
+        <div id="title-container">
+            <label for="start_time">시작</label>
+            <input id="start_time" name="start_time" type="datetime-local" required>
+            <label for="end_time">종료</label>
+            <input id="end_time" name="end_time" type="datetime-local" required>
+            <br>
+            <label for="title" id="title-label">제목</label>
+            <!-- 제목 입력창 -->
+            <input type="text" id="title" name="title">
+        </div>
+        <textarea name="content" id="contents">
+        </textarea>
+        <div class='button-container'>
+            <input type="submit" id='upload-button' value='이벤트 공지하기'>
+        </div>
+    </form>
+
+
+    <script>
+        // ckdeitor 스크립트
+      var ins;
+
+      ClassicEditor
+          .create(document.querySelector("#contents"),
+              {
+                  language: "ko",
+                  simpleUpload:
+                  {
+                      uploadUrl: "/upload_img/",
+                      withCredentials: true,
+                  }
+              })
+          .then(newEditor => {
+            ins = newEditor;
+          })
+          .catch(error => {
+              console.error(error);
+          });
+      
+      document.getElementById('upload-button').onclick = 
+      function()
+      {
+        console.log(ins.getData());
+      }
+      
+
+ /////////////////////////////////////////////////////////////나중에 확인할때 소스
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('form').onsubmit = function(event) {
+            var startTime = new Date(document.getElementById('start_time').value);
+            var endTime = new Date(document.getElementById('end_time').value);
+
+            if (endTime <= startTime) {
+                alert('종료 시간은 시작 시간보다 늦어야 합니다.');
+                event.preventDefault(); // Prevent form submission
+            }
+        };
+    });
+    </script>
+</body>
+</html>

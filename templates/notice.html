@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
-    <title>EzJam 자유게시판</title>
+    <title>EzJam 공지사항</title>
     <link rel="stylesheet" type="text/css" href="static/css/main.css">
     <link rel="stylesheet" type="text/css" href="static/css/community.css">
 </head>
@@ -35,14 +35,12 @@
     <div class="main-content">
         <div class="container">
             <br>
-            <h1><strong><a style="color:#4CAF50;">자유게시판</a></strong></h1>
+            <h1><strong><a style="color:#4CAF50;">공지사항</a></strong></h1>
             <div class='button-container'>
-                <button id='upload-button' onclick="location.href='/write'">글쓰기</button>
+              {% if isUserAdmin == True %}
+              <button id='upload-button' onclick="location.href='/write_notice'">공지 작성(관리자 전용)</button>
+              {% endif %}
               <form action="" method="GET">
-                <select id="search-setting" name="search_type">
-                  <option value="title" {% if search_type == 'title' %}selected{% endif %}>제목</option>
-                  <option value="author" {% if search_type == 'author' %}selected{% endif %}>글쓴이</option>
-                </select>
                 <input id="search-string" type="text" name="search" value="{{ search_query }}">
                 <input type="submit" value="검색">
               </form>
@@ -50,19 +48,17 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>글번호</th>
-                        <th>작성자</th>
+                        <th>공지 번호</th>
                         <th style='width: 70%;'>제목</th>
                         <th>작성시각</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for post in posts %}
+                    {% for not_item in notice %}
                         <tr>
-                            <td>{{ post[0] }}</td>
-                            <td>{{ post[2] }}</td>
-                            <td><a style="color:#110957;" href="/post/{{ post[0] }}">{{ post[1] }}</a></td>
-                            <td>{{ post[3].strftime('%H:%M') }}&nbsp;&nbsp;&nbsp;&nbsp;{{ post[3].strftime('%m/%d') }}</td>
+                            <td>{{ not_item[0] }}</td>
+                            <td><a style="color:#110957;" href="/post_notice/{{ not_item[0] }}">{{ not_item[1] }}</a></td>
+                            <td>{{ not_item[2].strftime('%H:%M') }}&nbsp;&nbsp;&nbsp;&nbsp;{{ not_item[2].strftime('%m/%d') }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -71,11 +67,11 @@
     </div>
     <div class="pagination">
         {% if page > 1 %}
-            <a href="?page={{ page - 1 }}&search={{ search_query }}&search_type={{ search_type }}">&#60;&#60; 이전 페이지   </a>
+            <a href="?page={{ page - 1 }}&search={{ search_query }}">&#60;&#60; 이전 페이지   </a>
         {% endif %}
         
         {% if page < total_pages %}
-            <a href="?page={{ page + 1 }}&search={{ search_query }}&search_type={{ search_type }}">   다음 페이지 &#62;&#62;</a>
+            <a href="?page={{ page + 1 }}&search={{ search_query }}">   다음 페이지 &#62;&#62;</a>
         {% endif %}
     </div>
 </body>

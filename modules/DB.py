@@ -16,12 +16,19 @@ USER_PHONE_CHECK_QUERY = 'SELECT phone FROM userinfo WHERE phone=%s'
 SIGNUP_QUERY = "INSERT INTO userinfo (id, pw_hashed, nickname, email_local, email_domain, name_last, name_first, sex, birthday, phone, address, zipcode) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 USER_NICKNAME_QUERY = "SELECT nickname FROM userinfo WHERE id=%s"
 WRITE_ARTICLE_QUERY = "INSERT INTO posts (title, author_id, author_nickname, content) VALUES (%s, %s, %s, %s)"
+WRITE_NOTICE_QUERY = "INSERT INTO notice (title, content) VALUES (%s, %s)"
+WRITE_EVENT_QUERY = "INSERT INTO event (title, content, start_time, end_time) VALUES (%s, %s, %s, %s)"
 POST_SEARCH_QUERY = "SELECT title, author_nickname, created_at, views, content, id FROM posts WHERE id=%s"
 VIEWS_INCREASE_QUERY = "UPDATE posts SET views = views + 1 WHERE id = %s"
+NOTICE_VIEWS_INCREASE_QUERY = "UPDATE notice SET views = views + 1 WHERE id = %s"
+EVENT_VIEWS_INCREASE_QUERY = "UPDATE event SET views = views + 1 WHERE id = %s"
 COMMENTS_FETCH_QUERY = "SELECT author_nickname, created_at, content, id FROM comments WHERE post_id=%s ORDER BY created_at DESC"
 REPLYS_FETCH_QUERY = "SELECT author_nickname, created_at, content, comment_id FROM replys WHERE post_id=%s ORDER BY created_at DESC"
 WRITE_COMMENT_QUERY = "INSERT INTO comments (post_id, author_id, author_nickname, content) VALUES (%s, %s, %s, %s)"
 WRITE_REPLY_QUERY = "INSERT INTO replys (post_id, comment_id, author_id, author_nickname, content) VALUES (%s, %s, %s, %s, %s)"
+NOTICE_SEARCH_QUERY = "SELECT title, created_at, views, content, id FROM notice WHERE id=%s"
+EVENT_SEARCH_QUERY = "SELECT title, created_at, views, content, id, start_time, end_time FROM event WHERE id=%s"
+EVENT_INFO_QUERY = "SELECT title, start_time, end_time, id FROM event"
 
 # DB와 연결해 connection 객체 리턴하는 함수
 def getConnection():
@@ -149,6 +156,30 @@ def write_article(authorId, authorNickname, title, content):
     connection.close()
     return str(last_row_id)
 
+# 공지사항 글 업로드 함수
+def write_notice(title, content):
+    connection = getConnection()
+    cursor = connection.cursor()
+    data = (title, content)
+    cursor.execute(WRITE_NOTICE_QUERY, data)
+    last_row_id = cursor.lastrowid
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return str(last_row_id)
+
+# 이벤트 글 업로드 함수
+def write_event(title, content, start_time, end_time):
+    connection = getConnection()
+    cursor = connection.cursor()
+    data = (title, content, start_time, end_time)
+    cursor.execute(WRITE_EVENT_QUERY, data)
+    last_row_id = cursor.lastrowid
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return str(last_row_id)
+
 # 게시글 조회하는 함수
 def get_post(postId):
     connection = getConnection()
@@ -162,6 +193,34 @@ def get_post(postId):
         return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][5]
     else:
         return False, False, False, False, False
+
+# 공지사항 조회하는 함수
+def get_notice(noticeId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (noticeId)
+    cursor.execute(NOTICE_SEARCH_QUERY, int(value))
+    data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    if data:
+        return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4] # title, created_at, views, content, id 순서
+    else:
+        return False, False, False, False, False
+
+# 이벤트 조회하는 함수
+def get_event(eventId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (eventId)
+    cursor.execute(EVENT_SEARCH_QUERY, int(value))
+    data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    if data:
+        return data[0][0], data[0][1], data[0][2], data[0][3], data[0][4], data[0][5], data[0][6] # title, created_at, views, content, id, start_time, end_time
+    else:
+        return False, False, False, False, False, False, False
 
 # 댓글 불러온느 함수
 def get_comments(postId):
@@ -202,6 +261,26 @@ def view_count_post(postId):
     connection.commit()
     cursor.close()
     connection.close()
+
+# 공지사항 조회수 올리는 함수
+def view_count_notice(noticeId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (noticeId)
+    cursor.execute(NOTICE_VIEWS_INCREASE_QUERY, int(value))
+    connection.commit()
+    cursor.close()
+    connection.close()
+    
+# 이벤트 조회수 올리는 함수
+def view_count_event(eventId):
+    connection = getConnection()
+    cursor = connection.cursor()
+    value = (eventId)
+    cursor.execute(EVENT_VIEWS_INCREASE_QUERY, int(value))
+    connection.commit()
+    cursor.close()
+    connection.close()
     
 # 댓글 작성 함수
 def write_comment(postId, authorId, content):
@@ -225,3 +304,20 @@ def write_reply(postId, commentId, authorId, content):
     cursor.close()
     connection.close()
     
+def get_events():
+    connection = getConnection()
+    cursor = connection.cursor()
+    cursor.execute(EVENT_INFO_QUERY)
+    data = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    events = []
+    for row in data:
+        event = {
+            'title': row[0],
+            'start': row[1].isoformat(),  # ISO 포맷으로 변환
+            'end': row[2].isoformat(),  # 종료 시간이 없을 수도 있으므로 체크
+            'id': row[3]
+        }
+        events.append(event)
+    return events

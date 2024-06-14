@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>(관리자)공지사항 작성</title>
+    <!-- ckeditor -->
+    <link rel="stylesheet" type="text/css" href="static/css/write.css">
+    <script src="static/ckeditor/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+</head>
+<body>
+    <div class="main-title">
+      <a href="/">
+        <img width="120" height="100" src="static/logos/main_logo.png">
+      </a>
+    </div>
+
+    <form action="/write_notice" method="POST"> 
+        <h1>공지사항 작성</h1>
+        <div id="title-container">
+            <label for="title" id="title-label">제목</label>
+            <!-- 제목 입력창 -->
+            <input type="text" id="title" name="title">
+        </div>
+        <textarea name="content" id="contents">
+        </textarea>
+        <div class='button-container'>
+            <input type="submit" id='upload-button' value='공지하기'>
+        </div>
+    </form>
+
+
+    <script>
+        // ckdeitor 스크립트
+      var ins;
+
+      ClassicEditor
+          .create(document.querySelector("#contents"),
+              {
+                  language: "ko",
+                  simpleUpload:
+                  {
+                      uploadUrl: "/upload_img/",
+                      withCredentials: true,
+                  }
+              })
+          .then(newEditor => {
+            ins = newEditor;
+          })
+          .catch(error => {
+              console.error(error);
+          });
+      
+      document.getElementById('upload-button').onclick = 
+      function()
+      {
+        console.log(ins.getData());
+      }
+      
+
+ /////////////////////////////////////////////////////////////나중에 확인할때 소스
+    </script>
+</body>
+</html>
