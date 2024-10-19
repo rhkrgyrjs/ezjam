@@ -203,13 +203,16 @@
                 }
 
                 // 서버로 애니메이션 상태와 움직임 정보 전송
-                socket.emit('player_moved', {
-                    playerId: playerId,
-                    x: player.x,
-                    y: player.y,
-                    moved: moved,
-                    direction: direction
-                });
+                if (moved == true)
+                {
+                    socket.emit('player_moved', {
+                        playerId: playerId,
+                        x: player.x,
+                        y: player.y,
+                        moved: moved,
+                        direction: direction
+                    });
+                }
             }
 
             // 새로운 플레이어 추가 함수 (플레이어 ID 텍스트 추가)
