@@ -4,33 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
     <title>EzJam 자유게시판</title>
-    <link rel="stylesheet" type="text/css" href="static/css/main.css">
-    <link rel="stylesheet" type="text/css" href="static/css/community.css">
+    <!-- 임시로 기존 css는 사용 해제해 놓음 -->
+    <!-- <link rel="stylesheet" type="text/css" href="static/css/main.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="static/css/community.css"> -->
+    <link rel="stylesheet" type="text/css" href="static/css/base.css">
 </head>
 <body>  
-    <div class="main-title">
-      <a href="/">
-        <img width="120" height="100" src="static/logos/main_logo.png">
-      </a>
-    </div>
-    {% if not loginInfo %}
-    <div class="buttons">
-      <button id="login-button" onclick="location.href='/login'">로그인</button>
-      <button id="signup-button" onclick="location.href='/signup'">회원가입</button>
-    </div>
-    {% endif %}
-    {% if loginInfo %}
-    <div class="buttons">
-      <span>환영합니다! {{loginInfo}} 님!  </span>
-      <button id="logout-button" onclick="location.href='/logout'">로그아웃</button>
-    </div>
-    {% endif %}
-    <br>
+  <body>
     <div class="navbar">
-      <a href="/notice">공지사항</a>
-      <a href="/community">자유게시판</a>
-      <a href="/rank">랭킹</a>
-      <a href="/event">이벤트 일정</a>
+        <div class="menu">
+            <ul>
+                <li><a href="/notice">공지사항</a></li>
+                <li><a href="/community">자유게시판</a></li>
+                <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 60px;"></a></li>
+                <li><a href="/rank">랭킹</a></li>
+                <li><a href="/event">이벤트</a></li>
+            </ul>            
+        </div>
+        <div class="auth-buttons">
+            {% if not loginInfo %}
+            <button class="auth-button" onclick="location.href='/login'">로그인</button>
+            <button class="auth-button" onclick="location.href='/signup'">회원가입</button>
+            {% endif %}
+            {% if loginInfo %}
+            <span>{{loginInfo}}</span>
+            <button class="auth-button" onclick="location.href='/logout'">로그아웃</button>
+            {% endif %}
+        </div>
     </div>
     <div class="main-content">
         <div class="container">

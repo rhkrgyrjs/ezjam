@@ -1,8 +1,7 @@
 import uuid
+import datetime
+import random
 
-def uuid_to_decimal():
-    uuid_str = str(uuid.uuid4()).replace('-', '')
-    uuid_int = int(uuid_str, 16)
-    return uuid_int
-
-print(uuid_to_decimal())
+def gen_rnd_filename():
+    filename_prefix = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    return '%s%s' % (filename_prefix, str(random.randrange(1000, 10000)))

@@ -1,14 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EZJAM</title>
-    <script src="Https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/phaser-matter-collision-plugin"></script>
+    <title>Phaser 실시간 멀티플레이 게임</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 </head>
 <body>
-    <div id="EZJAM"></div>
-    <script type="module" src="static/game/js/EZJAM-game.js"></script>
+    <h1>Phaser 실시간 멀티플레이 게임</h1>
+    <script>
+        const socket = io();
+        let playerId;
+        let gameInitialized = false;
+
+        socket.emit('getNickName');
+
+        socket.on('nickName', function(nickName) {
+            playerId = nickName;
+            console.log('받은 playerId:', playerId);
+
+            if (!gameInitialized) {
+                initializeGame();
+                gameInitialized = true;
+            }
+        });
+
+        function initializeGame() {
+            const config = {
+                type: Phaser.AUTO,
+                width: 800,
+                height: 600,
+                physics: {
+                    default: 'arcade',
+                    arcade: {
+                        gravity: { y: 0 },
+                        debug: false
+                    }
+                },
+                scene: {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+            };
+
+            let player;
+            let playerIdText;
+            let otherPlayers = {};
+            let otherPlayersText = {}; // 다른 플레이어들의 텍스트 저장
+            let cursors;
+            let currentAnimation = null;
+
+            const game = new Phaser.Game(config);
+
+            function preload() {
+                // 배경 이미지 로드
+                this.load.image('background', '/static/games/images/ground.png');
+
+                // 스프라이트시트 불러오기 (프레임 너비와 높이를 설정)
+                this.load.spritesheet('player', '/static/games/images/player.png', { frameWidth: 16, frameHeight: 16 });
+            }
+
+            function create() {
+                // 백그라운드 이미지 추가 (화면 중앙에 배치, 전체 화면에 맞춤)
+                let background = this.add.image(400, 300, 'background');
+                background.setDisplaySize(this.scale.width, this.scale.height); // 배경 화면 크기를 전체 캔버스에 맞춤
+
+                // 플레이어 생성
+                player = this.physics.add.sprite(400, 300, 'player').setDisplaySize(50, 50);
+                cursors = this.input.keyboard.createCursorKeys();
+
+                // 플레이어 ID 텍스트 추가 (가운데 정렬)
+                playerIdText = this.add.text(player.x, player.y + 30, playerId, {
+                    fontSize: '10px',
+                    fill: '#ffffff'
+                });
+                playerIdText.setOrigin(0.5);  // 텍스트를 가운데 정렬
+
+                // 애니메이션 정의
+                this.anims.create({
+                    key: 'down',
+                    frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 0, 2] }),
+                    frameRate: 10,
+                    repeat: -1
+                });
+                this.anims.create({
+                    key: 'right',
+                    frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 3, 5] }),
+                    frameRate: 10,
+                    repeat: -1
+                });
+                this.anims.create({
+                    key: 'left',
+                    frames: this.anims.generateFrameNumbers('player', { frames: [8, 7, 8, 6] }),
+                    frameRate: 10,
+                    repeat: -1
+                });
+                this.anims.create({
+                    key: 'up',
+                    frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 9, 11] }),
+                    frameRate: 10,
+                    repeat: -1
+                });
+
+                // 서버에 새로운 플레이어 접속 알림
+                socket.emit('new_player', { playerId: playerId, x: player.x, y: player.y });
+
+                // 서버로부터 이미 접속한 모든 플레이어 정보 받기
+                socket.on('existing_players', function (playersData) {
+                    for (let id in playersData) {
+                        if (id !== playerId) {  // 자신 이외의 다른 플레이어만 화면에 추가
+                            addPlayer(id, playersData[id].x, playersData[id].y);
+                            console.log('다른 플레이어 추가' + id);
+                        }
+                    }
+                });
+
+                // 다른 플레이어가 접속했을 때 처리
+                socket.on('new_player', function (data) {
+                    addPlayer(data.playerId, data.x, data.y);
+                });
+
+                // 플레이어가 나가면 해당 플레이어 삭제
+                socket.on('remove_player', function (id) {
+                    if (otherPlayers[id]) {
+                        otherPlayers[id].destroy();
+                        otherPlayersText[id].destroy(); // 텍스트도 삭제
+                        delete otherPlayers[id];
+                        delete otherPlayersText[id];
+                    }
+                });
+
+                // 서버에서 받은 플레이어 위치 업데이트 처리
+                socket.on('player_moved', function (data) {
+                    if (otherPlayers[data.playerId]) {
+                        // 다른 플레이어의 이동 처리
+                        otherPlayers[data.playerId].setPosition(data.x, data.y);
+
+                        // 해당 플레이어의 ID 텍스트도 위치 업데이트
+                        otherPlayersText[data.playerId].setPosition(data.x, data.y + 30);
+
+                        // 애니메이션 재생 (움직임 정보가 있을 경우)
+                        if (data.moved) {
+                            if (data.direction === 'right') {
+                                otherPlayers[data.playerId].anims.play('right', true);
+                            } else if (data.direction === 'left') {
+                                otherPlayers[data.playerId].anims.play('left', true);
+                            } else if (data.direction === 'up') {
+                                otherPlayers[data.playerId].anims.play('up', true);
+                            } else if (data.direction === 'down') {
+                                otherPlayers[data.playerId].anims.play('down', true);
+                            }
+                        } else {
+                            // 움직임이 없으면 애니메이션 중지하고 첫 프레임으로
+                            otherPlayers[data.playerId].anims.stop();
+                            otherPlayers[data.playerId].setFrame(0);  // 첫 프레임으로 설정
+                        }
+                    }
+                });
+            }
+
+            function update() {
+                let moved = false;
+                let direction = null;
+
+                // 플레이어의 이동 처리
+                if (cursors.left.isDown) {
+                    player.x -= 5;
+                    direction = 'left';
+                    moved = true;
+                } else if (cursors.right.isDown) {
+                    player.x += 5;
+                    direction = 'right';
+                    moved = true;
+                }
+
+                if (cursors.up.isDown) {
+                    player.y -= 5;
+                    direction = 'up';
+                    moved = true;
+                } else if (cursors.down.isDown) {
+                    player.y += 5;
+                    direction = 'down';
+                    moved = true;
+                }
+
+                // 플레이어 ID 텍스트 위치 업데이트 (캐릭터 아래에 위치)
+                playerIdText.setPosition(player.x, player.y + 30);
+
+                // 애니메이션을 재생
+                if (direction && currentAnimation !== direction) {
+                    player.anims.play(direction, true);
+                    currentAnimation = direction;
+                }
+
+                // 플레이어가 멈추면 애니메이션 중지하고 처음 프레임으로 되돌림
+                if (!moved && currentAnimation) {
+                    player.anims.stop();  // 애니메이션 중지
+                    player.setFrame(0);   // 처음 프레임으로 되돌림
+                    currentAnimation = null;
+                }
+
+                // 서버로 애니메이션 상태와 움직임 정보 전송
+                socket.emit('player_moved', {
+                    playerId: playerId,
+                    x: player.x,
+                    y: player.y,
+                    moved: moved,
+                    direction: direction
+                });
+            }
+
+            // 새로운 플레이어 추가 함수 (플레이어 ID 텍스트 추가)
+            function addPlayer(id, x, y) {
+                if (!otherPlayers[id]) {
+                    otherPlayers[id] = game.scene.scenes[0].physics.add.sprite(x, y, 'player').setDisplaySize(50, 50);
+                    otherPlayersText[id] = game.scene.scenes[0].add.text(x, y + 30, id, {
+                        fontSize: '10px',
+                        fill: '#ffffff'
+                    });
+                    otherPlayersText[id].setOrigin(0.5);  // 텍스트를 가운데 정렬
+                }
+            }
+        }
+
+        // 이하 채팅 기능 테스트
+
+        socket.on('chat-receive', function (data) {
+            console.log(String(data.nickName) + ' : ' + String(data.message));
+        }); 
+
+        function sendChatMessage(message)
+        {
+            socket.emit('chat-send', {nickName: playerId, message: message});
+        }
+    </script>
 </body>
 </html>
+

@@ -1,51 +1,61 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="utf-8">
-  <title>EzJAM</title>
-  <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Start Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet"> <!-- VT323 글꼴 추가 -->
+    <!-- 임시로 기존 css는 사용 해제해 놓음 -->
+    <link rel="stylesheet" href="static/css/base.css">
+    <style>
+        /* 배경 이미지를 main 페이지에만 적용 */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #2b2000;
+            color: #d4b584;
+            font-family: 'VT323', monospace;
+            background-image: url("{{ url_for('static', filename='logos/main_page.png') }}"); /* 배경 이미지 경로 수정 */
+            background-size: cover;
+        }
+    </style>
 </head>
+
 <body>
-  <!-- 이하 상단 부분 -->
-  <div class="main-title">
-    <a href="/">
-      <img width="120" height="100" src="static/logos/main_logo.png">
-    </a>
-  </div>
-  <!-- 로그인/회원가입 버튼 부분 -->
-  {% if not loginInfo %}
-  <div class="buttons">
-    <button id="login-button" onclick="location.href='/login'">로그인</button>
-    <button id="signup-button" onclick="location.href='/signup'">회원가입</button>
-  </div>
-  {% endif %}
-  {% if loginInfo %}
-  <div class="buttons">
-    <span>환영합니다! {{loginInfo}} 님!  </span>
-    <button id="logout-button" onclick="location.href='/logout'">로그아웃</button>
-  </div>
-  {% endif %}
-  <br>
-  <!-- 이하 네비게이션 바 부분 -->
-  <div class="navbar">
-    <a href="/notice">공지사항</a>
-    <a href="/community">자유게시판</a>
-    <a href="/rank">랭킹</a>
-    <a href="/event">이벤트 일정</a>
-    <!--
-    <div class="dropdown">
-      <button class="dropbtn">Dropdown 
-        <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-content">
-        <a href="#">Link 1</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a>
-      </div>
-    </div> -->
-  </div>
-  <!-- 이하 -->
-  <br><br><br>
-  <button onclick="location.href='/game'">게임 시작(테스트)</button>
+    <div class="navbar">
+        <div class="menu">
+            <ul>
+                <li><a href="/notice">공지사항</a></li>
+                <li><a href="/community">자유게시판</a></li>
+                <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 60px;"></a></li>
+                <li><a href="/rank">랭킹</a></li>
+                <li><a href="/event">이벤트</a></li>
+            </ul>            
+        </div>
+        <div class="auth-buttons">
+            {% if not loginInfo %}
+            <button class="auth-button" onclick="location.href='/login'">로그인</button>
+            <button class="auth-button" onclick="location.href='/signup'">회원가입</button>
+            {% endif %}
+            {% if loginInfo %}
+            <span>{{loginInfo}}</span>
+            <button class="auth-button" onclick="location.href='/logout'">로그아웃</button>
+            {% endif %}
+        </div>
+    </div>
+    
+    
+
+    <div class="container">
+        <div class="logo"></div> <!-- 로고 이미지 추가 -->
+        <button class="game-button" onclick="location.href='/game'">게임 시작</button> <!-- 원래의 게임 시작 버튼 유지 -->
+    </div>
 </body>
+
 </html>
