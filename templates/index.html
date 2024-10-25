@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Start Page</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet"> <!-- VT323 글꼴 추가 -->
-    <!-- 임시로 기존 css는 사용 해제해 놓음 -->
     <link rel="stylesheet" href="static/css/base.css">
     <style>
         /* 배경 이미지를 main 페이지에만 적용 */
@@ -17,14 +15,22 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            height: 100vh;
             background-color: #2b2000;
             color: #d4b584;
-            font-family: 'VT323', monospace;
+            font-family: Arial, sans-serif;
             background-image: url("{{ url_for('static', filename='logos/main_page.png') }}"); /* 배경 이미지 경로 수정 */
             background-size: cover;
+            background-position: center; /* 이미지가 중앙에 오도록 설정 */
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100%;
         }
     </style>
+    <script>
+        function showPopup() {
+            alert('coming soon');
+        }
+    </script>
 </head>
 
 <body>
@@ -33,8 +39,8 @@
             <ul>
                 <li><a href="/notice">공지사항</a></li>
                 <li><a href="/community">자유게시판</a></li>
-                <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 60px;"></a></li>
-                <li><a href="/rank">랭킹</a></li>
+                <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 70px;"></a></li>
+                <li><a href="#" onclick="showPopup()">랭킹</a></li>
                 <li><a href="/event">이벤트</a></li>
             </ul>            
         </div>
@@ -53,9 +59,20 @@
     
 
     <div class="container">
-        <div class="logo"></div> <!-- 로고 이미지 추가 -->
-        <button class="game-button" onclick="location.href='/game'">게임 시작</button> <!-- 원래의 게임 시작 버튼 유지 -->
+        <div class="start-logo"></div> <!-- 로고 이미지 추가 -->
+        <a href="/game">
+            <img src="static/logos/start_button.png" alt="게임 시작" style="height: 150px; margin-left: 13px; margin-top: -50px;" class="game-button-img"> <!-- 오른쪽으로 이동 -->
+        </a>
     </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
 </body>
 
 </html>

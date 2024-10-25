@@ -16,17 +16,19 @@
     </div>
 
     <form action="/write_event" method="POST"> 
-        <h1>이벤트 공지 작성</h1>
-        <div id="title-container">
-            <label for="start_time">시작</label>
-            <input id="start_time" name="start_time" type="datetime-local" required>
-            <label for="end_time">종료</label>
-            <input id="end_time" name="end_time" type="datetime-local" required>
-            <br>
-            <label for="title" id="title-label">제목</label>
-            <!-- 제목 입력창 -->
-            <input type="text" id="title" name="title">
-        </div>
+        <form action="/write_event" method="POST"> 
+            <div id="title-container">
+                <label for="start_time" style="color: #d4b584; margin-left: 10px;">시작</label>
+                <input id="start_time" name="start_time" type="datetime-local" required>
+                <label for="end_time" style="color: #d4b584; margin-left: 10px;">종료</label>
+                <input id="end_time" name="end_time" type="datetime-local" required>
+                <br>
+                <label for="title" id="title-label" style="margin-left: 200px;"><strong>제목</strong></label>
+                <!-- 제목 입력창 -->
+                <input type="text" id="title" name="title">
+            </div>
+        </form>
+        
         <textarea name="content" id="contents">
         </textarea>
         <div class='button-container'>

@@ -4,10 +4,12 @@ body
     font-family: Arial, sans-serif;
 }
 
-#calendar 
-{
-    max-width: 1800px;
-    max-height: 900px;
-    margin: 40px auto;
-    padding: 0 10px;
+#calendar {
+    max-width: 900px;
+    max-height: 500px; /* 원하는 높이로 조정 */
+    margin: 20px auto 20px; /* 위쪽 여백 20px, 아래 여백 10px, 좌우 중앙 정렬 */
+    overflow: visible;
 }
+
+
+

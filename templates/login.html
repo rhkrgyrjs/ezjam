@@ -47,12 +47,31 @@
             }
         }
     </script>
+    <style>
+        /* 배경 이미지를 main 페이지에만 적용 */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #2b2000;
+            color: #d4b584;
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='logos/main_page.png') }}");
+            background-size: cover; /* 변경: 이미지가 짤리지 않고 다 나오도록 설정 */
+            background-position: center; /* 이미지가 중앙에 오도록 설정 */
+            background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+        }
+
+    </style>
 </head>
 <body>
 
 <div class="main-title">
     <a href="/">
-        <img width="120" height="100" src="static/logos/main_logo.png">
+        <img width="120" height="100" src="static/logos/main_logo.png" style="margin-top: 20px;">
     </a>
 </div>
 <div class="login-wrapper">

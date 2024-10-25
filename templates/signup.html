@@ -15,7 +15,25 @@
 			});
 		});
 	</script>
-	
+	<style>
+        /* 배경 이미지를 main 페이지에만 적용 */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #2b2000;
+            color: #d4b584;
+            font-family: Arial, sans-serif;
+            background-image: url("{{ url_for('static', filename='logos/main_page.png') }}");
+            background-size: cover; /* 변경: 이미지가 짤리지 않고 다 나오도록 설정 */
+            background-position: center; /* 이미지가 중앙에 오도록 설정 */
+            background-repeat: no-repeat; /* 이미지가 반복되지 않도록 설정 */
+        }
+
+    </style>
     <script>
         // 이하 생일의 검증(현재보다 미래의 생일을 지정하는 경우)을 막기 위한 onload 함수 지정
         function getCurrentDate() {
@@ -232,11 +250,10 @@
 <body>
     <div class="main-title">
       <a href="/">
-        <img width="120" height="100" src="static/logos/main_logo.png">
+        <img width="80" height="70" src="static/logos/main_logo.png">
       </a>
     </div>
     <div class="signup-wrapper">
-        <h2>회원가입</h2>
         <form class="signup-form" id="signupForm" method="POST" action="/signup">
             <!-- <label for="user-id">ID는 8~16자의 영어/숫자 조합입니다.</label> -->
             <div class="form-row">

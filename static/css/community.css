@@ -37,6 +37,12 @@ tr:nth-child(even)
     padding: 10px 20px;
 }
 
+.community-container
+{
+    text-align: right;
+    font-size: 20px;
+    padding: 10px 20px;
+}
 .button-container button
 {
     display: inline-block; /* 인라인 요소로 설정 */

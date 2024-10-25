@@ -2,12 +2,17 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>EzJam 공지사항</title>
     <!-- 임시로 기존 css는 사용 해제해 놓음 -->
     <!-- <link rel="stylesheet" type="text/css" href="static/css/main.css"> -->
     <!-- <link rel="stylesheet" type="text/css" href="static/css/community.css"> -->
      <link rel="stylesheet" type="text/css" href="static/css/base.css">
+     <script>
+        function showPopup() {
+            alert('coming soon');
+        }
+    </script>
 </head>
 <body>  
   <div class="navbar">
@@ -15,8 +20,8 @@
         <ul>
             <li><a href="/notice">공지사항</a></li>
             <li><a href="/community">자유게시판</a></li>
-            <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 60px;"></a></li>
-            <li><a href="/rank">랭킹</a></li>
+            <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 70px;"></a></li>
+            <li><a href="#" onclick="showPopup()">랭킹</a></li>
             <li><a href="/event">이벤트</a></li>
         </ul>            
     </div>
@@ -31,13 +36,19 @@
         {% endif %}
     </div>
 </div>
+    <style>
+        #upload-button {
+        float: right; /* 글쓰기 버튼을 오른쪽으로 정렬 */
+        }
+    </style>
     <div class="main-content">
-        <div class="container">
-            <br>
-            <h1><strong><a style="color:#4CAF50;">공지사항</a></strong></h1>
+        <h1><strong><a style="color:#4CAF50;">공지사항</a></strong></h1>
             <div class='button-container'>
               {% if isUserAdmin == True %}
               <button id='upload-button' onclick="location.href='/write_notice'">공지 작성(관리자 전용)</button>
+              <script>
+                console.log('나는 관리자입니다');
+              </script>
               {% endif %}
               <form action="" method="GET">
                 <input id="search-string" type="text" name="search" value="{{ search_query }}">
@@ -64,14 +75,15 @@
             </table>
         </div>
     </div>
-    <div class="pagination">
+    <div class="pagination" style="text-align: center; margin-top: 20px;"> <!-- 중앙 정렬 -->
         {% if page > 1 %}
-            <a href="?page={{ page - 1 }}&search={{ search_query }}">&#60;&#60; 이전 페이지   </a>
+            <a href="?page={{ page - 1 }}&search={{ search_query }}">&#60;&#60; 이전 페이지</a>
         {% endif %}
         
         {% if page < total_pages %}
-            <a href="?page={{ page + 1 }}&search={{ search_query }}">   다음 페이지 &#62;&#62;</a>
+            <a href="?page={{ page + 1 }}&search={{ search_query }}">다음 페이지 &#62;&#62;</a>
         {% endif %}
     </div>
+    
 </body>
 </html>

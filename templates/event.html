@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maxinum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>EzJam 이벤트 일정</title>
     <!-- <link rel="stylesheet" type="text/css" href="static/css/main.css"> -->
     <!-- <link rel="stylesheet" type="text/css" href="static/css/community.css"> -->
@@ -11,6 +11,11 @@
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko'></script>
+    <script>
+        function showPopup() {
+            alert('coming soon');
+        }
+    </script>
 </head>
 <body>  
   <div class="navbar">
@@ -18,8 +23,8 @@
         <ul>
             <li><a href="/notice">공지사항</a></li>
             <li><a href="/community">자유게시판</a></li>
-            <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 60px;"></a></li>
-            <li><a href="/rank">랭킹</a></li>
+            <li><a href="/"><img src="static/logos/main_logo.png" alt="Main Logo" style="height: 70px;"></a></li>
+            <li><a href="#" onclick="showPopup()">랭킹</a></li>
             <li><a href="/event">이벤트</a></li>
         </ul>            
     </div>
@@ -34,8 +39,8 @@
         {% endif %}
     </div>
 </div>
-    <div class="main-content">
-        <div class="container">
+    <div class="event-content" >
+        <div id="event-schedule">
             <br>
             <h1><strong><a style="color:#4CAF50;">이벤트 일정</a></strong></h1>
             <div class='button-container'>
@@ -43,6 +48,7 @@
               <button id='upload-button' onclick="location.href='/write_event'">이벤트 공지 작성(관리자 전용)</button>
               {% endif %}
             </div>
+        </div>    
             <div id='calendar'></div>
         </div>
     </div>

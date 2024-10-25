@@ -4,12 +4,12 @@
   src: url('../fonts/TmonMonsori.ttf') format('truetype');
 }
 
-body 
-{
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0 100px;
+  background-color: #2b2000 !important;
+  font-size: 14px; /* 전체 폰트 크기 조정 */
 }
 
 .container 
@@ -25,6 +25,8 @@ body
     padding: 20px;
     margin-top: 20px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    border: 2px solid #4CAF50;
 }
 
 .post-header 
@@ -60,6 +62,9 @@ body
     padding: 10px;
     margin-bottom: 10px;
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    border: 2px solid #4CAF50;
+    
 }
 
 .comment-meta, .reply-meta
@@ -75,6 +80,7 @@ body
     margin-top: 30px;
     display: flex;
     flex-direction: column;
+    
 }
 
 .comment-form textarea, .reply-form textarea 
@@ -85,6 +91,8 @@ body
     margin-bottom: 10px;
     border: 1px solid #ccc;
     resize: none; /* 크기 조정 비활성화 */
+    border-radius: 10px;
+    border: 2px solid #4CAF50;
 }
 
 .comment-form button, .reply-form button
@@ -238,4 +246,9 @@ hr
 
 .dropdown:hover .dropdown-content {
   display: block;
+}
+
+.comment-title {
+  color: #d4b584;; /* 원하는 색상으로 변경 */
+  font-weight: bold; /* 글씨 두껍게 */
 }
